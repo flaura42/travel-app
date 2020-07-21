@@ -1,12 +1,20 @@
 const path = require('path')
 const webpack = require('webpack')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebPackPlugin = require("html-webpack-plugin")
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const regeneratorRuntime = require("regenerator-runtime")
+const TerserPlugin = require('terser-webpack-plugin')
+const html = require('html-loader')
 
 module.exports = {
   entry: './src/client/index.js',
   mode: 'development',
   devtool: 'source-map',
+  devServer: {
+    contentBase: './dist'
+  },
   stats: 'verbose',
   module: {
     rules: [
@@ -15,14 +23,21 @@ module.exports = {
         exclude: /node_modules/,
         loader: "babel-loader"
       }, {
-        test: /\.css$/,
-        use: [ 'style-loader', 'css-loader' ]
+        test: /\.scss$/,
+        use: [ 'style-loader', 'css-loader', 'sass-loader' ]
+      }, {
+        test: /\.html$/i,
+        loader: 'html-loader'
+      }, {
+        test: /\.(png|jpe?g|gif)$/i,
+        loader: 'file-loader'
       }
     ]
   },
   output: {
     libraryTarget: 'var',
     library: 'Client',
+    path: path.resolve(process.cwd(), 'dist')
   },
   plugins: [
     new HtmlWebPackPlugin({
@@ -37,6 +52,7 @@ module.exports = {
       // Automatically remove all unused webpack assets on rebuild
       cleanStaleWebpackAssets: true,
       protectWebpackAssets: false
-    })
+    }),
+    new MiniCssExtractPlugin()
   ]
 }

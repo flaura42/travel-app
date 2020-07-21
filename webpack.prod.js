@@ -23,6 +23,7 @@ module.exports = {
   output: {
     libraryTarget: 'var',
     library: 'Client',
+    path: path.resolve('dist')
   },
   plugins: [
     new HtmlWebPackPlugin({
@@ -30,6 +31,10 @@ module.exports = {
       filename: "./index.html",
     }),
     new MiniCssExtractPlugin({ filename: "[name].css" }),
-    new WorkboxPlugin.GenerateSW()
+    new WorkboxPlugin.GenerateSW({
+      clientsClaim: true,
+      skipWaiting: true
+    }),
+    new webpack.DefinePlugin({})
   ]
 }
