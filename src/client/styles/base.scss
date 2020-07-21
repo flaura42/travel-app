@@ -1,0 +1,16 @@
+$font-stack: Verdana, sans-serif;
+$primary-color: #222;
+$secondary-color: #eee;
+
+body {
+  background-color: $secondary-color;
+  color: $primary-color;
+  font: 100% $font-stack;
+  margin: 0 auto;
+  max-width: 1100px;
+}
+
+
+.invisible {
+  display: none;
+}

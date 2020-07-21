@@ -1,0 +1,20 @@
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+
+#submit-form {
+  background-color: rgb(181, 218, 255);
+  // background: linear-gradient(rgb(48, 41, 251, 0.75), rgb(181, 218, 255), rgb(48, 41, 251, 0.75));
+  color: #222;
+  font-size: 1.2em;
+  font-weight: bold;
+  padding: 15px 20px;
+
+  &:hover {
+  background-color: #222;
+  // background: linear-gradient(rgb(181, 218, 255), rgb(48, 41, 251, 0.75), rgb(181, 218, 255));
+  color: rgb(181, 218, 255);
+  }
+}
