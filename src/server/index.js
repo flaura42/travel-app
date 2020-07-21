@@ -26,8 +26,10 @@ app.get('/', (req, res) => {
     res.send(path.resolve('src/client/views/index.html'))
 })
 
-const getGeo = async (place) => {
-  const response = await fetch(`http://api.geonames.org/postalCodeSearchJSON?placename=${place}&maxRows=10&username=flaura42`)
+const getGeo = async (destination) => {
+  const url = `http://api.geonames.org/postalCodeSearchJSON?${destination}&maxRows=10&username=${process.env.GEO_ID}`
+  console.log('url: ', url);
+  const response = await fetch(url)
   try {
     const data = await response.json()
     const lat = data.postalCodes[0].lat
@@ -40,8 +42,9 @@ const getGeo = async (place) => {
 }
 
 app.post('/geo', async (req, res) => {
-  const place = req.body.placename
-  const coords = await getGeo(place)
+  const destination = req.body.destination
+  console.log('Place to search: ', destination)
+  const coords = await getGeo(destination)
   console.log('coords are: ', coords)
   res.send({ coords: coords})
 })
