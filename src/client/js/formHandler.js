@@ -1,5 +1,3 @@
-// import { validate } from 'validate'
-
 const submitForm = document.getElementById('submit-form');
 submitForm.addEventListener('click', (e) => {
   e.preventDefault()
@@ -8,10 +6,27 @@ submitForm.addEventListener('click', (e) => {
   const state = document.getElementById('state').value;
   const country = document.getElementById('country').value;
   const date = document.getElementById('date').value;
-  Client.validateDest(zip, city, state, country, date);
+  const loc = {
+    zip: zip,
+    city: city,
+    state: state,
+    country: country,
+    date: date
+  }
+  handleSubmit(loc)
 })
 
 export const handleSubmit = async(loc) => {
+  try {
+    const vLoc = await Client.validateDest(loc);
+    if (vLoc === false) { return }
+    handleGeo(vLoc)
+  } catch(e) {
+    console.log('Error with handleSubmit: ', e);
+  }
+}
+
+const handleGeo = async(loc) => {
   const response = await fetch('http://localhost:8000/geo', {
     method: 'POST',
     credentials: 'same-origin',

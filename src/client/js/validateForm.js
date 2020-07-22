@@ -1,69 +1,52 @@
-export function validateDest(zip, city, state, country) {
+export function validateDest(loc) {
   const zipI = document.getElementById('zip');
   const cityI = document.getElementById('city');
   const stateI = document.getElementById('state');
   const countryI = document.getElementById('country');
 
+  let zip
+  if (loc.zip) { zip = validateZip(loc.zip) } else { zip = '' }
+  const city = validateLoc(loc.city);
+  const state = validateLoc(loc.state);
+  const country = loc.country;
+
   console.log(`results: Zip: ${zip}, City: ${city}, State: ${state}, Country: ${country}`)
 
   if (!zip && !city && !state && !country) {
     alert('No destination received. Please enter a postal code or location details.')
+    return false;
   }
-   else if (zip && city || zip && state || zip && country) {
+  if (zip && city || zip && state || zip && city || zip && country) {
     alert('Please enter either a postal code OR location details.')
     cityI.value = '';
     stateI.value = '';
     countryI.value = '';
+    return false;
   }
-  else if (!zip && !state && !country) {
+  if (!city && !state && !country) {
+    return `postalcode=${zip}`
+  }
+  if (!state && !country) {
     const conf = confirm('Entering only a city may result in a different city being shown. Proceed?')
-    if (conf) {
-      console.log('proceeding');
-      validateLoc(city);
-    }
+    return (conf ? `placename=${city}` : false)
   }
-  else if (!city && !state && !country) {
-    console.log('validating zip');
-    validateZip(zip)
+  if (!city) {
+    return `placename=${state}&country=${country}`
+  }
+  if (!state) {
+    return `placename=${city}&country=${country}`
   }
   else {
-    console.log('validating loc');
-    validateLoc(city, state, country);
+    return `placename=${city}+${state}&country=${country}`
   }
 }
 
 const validateZip = (zip) => {
   const regex = /^\d{1,5}$/;
-  if (regex.test(zip)) {
-    console.log('zip test passed');
-    const loc = `postalcode=${zip}`
-    console.log('loc: ', loc);
-    Client.handleSubmit(loc);
-  }
-  else {
-    alert('Please enter a 5 digit postal code')
-  }
+  if (regex.test(zip)) { return zip }
+  else { alert('Please enter a 5 digit postal code') }
 }
 
-const validateLoc = (city, state, country) => {
-  const vCity = encodeURIComponent(city);
-  const vState = encodeURIComponent(state);
-  if (!city) {
-    const loc = `placename=${vState}&country=${country}`
-    console.log('loc: ', loc);
-    Client.handleSubmit(loc);
-  }
-  if (!state) {
-    const loc = `placename=${vCity}&country=${country}`
-    console.log('loc: ', loc);
-    Client.handleSubmit(loc);
-  }
-  else {
-    const loc = `placename=${vCity}+${vState}&country=${country}`
-    console.log('loc: ', loc);
-    Client.handleSubmit(loc);
-  }
-}
-
+const validateLoc = (loc) => { return encodeURIComponent(loc) }
 
   // const dateI = document.getElementById('date');
