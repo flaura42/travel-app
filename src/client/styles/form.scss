@@ -3,6 +3,24 @@ form {
   flex-direction: column;
 }
 
+.destination {
+  display: flex;
+}
+
+label {
+  margin: 10px 5px;
+}
+
+input {
+  margin: 10px 10px 10px 0;
+}
+
+.or {
+  margin: 10px;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
 
 #submit-form {
   background-color: rgb(181, 218, 255);
