@@ -26,6 +26,24 @@ app.get('/', (req, res) => {
     res.send(path.resolve('src/client/views/index.html'))
 })
 
+const projectData = {}
+
+app.post('/add', (req, res) => {
+  const data = req.body
+  res.status(200).send({
+    success: true,
+    message: 'data saved',
+    data: data
+  })
+  Object.assign(projectData, data)
+  console.log('updated projectData: ', projectData)
+})
+
+app.get('/all', (req, res) => {
+  res.send(projectData)
+
+})
+
 const getGeo = async (destination) => {
   const url = `http://api.geonames.org/postalCodeSearchJSON?${destination}&maxRows=10&username=${process.env.GEO_ID}`
   console.log('url: ', url);
@@ -59,7 +77,6 @@ const getWB = async (lat, long) => {
   const response = await fetch(url)
   try {
     const data = await response.json()
-    console.log('from getWB: ', data.length);
     return data
   } catch(e) {
     console.log('Error with WB: ', e)
