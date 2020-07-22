@@ -22,8 +22,9 @@ export const handleSubmit = async(loc) => {
     if (vLoc === false) { return }
     const coords = await handleGeo(vLoc)
     // const coords = { lat: 47.9, long: -122.2 }
-    console.log('Coords to wb: ', coords)
     const weather = await handleWb(coords)
+    const wCheck = await processWeather(weather);
+    if (wCheck === true) { Client.loadResults() }
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -70,5 +71,29 @@ const handleWb = async(coords) => {
     return data
   } catch(e) {
     console.log('handleWb error: ', e);
+  }
+}
+
+const processWeather = async(wData) => {
+  const data = {
+    city: wData.city_name,
+    state: wData.state_code,
+    country: wData.country_code,
+    timezone: wData.timezone
+  }
+  try {
+    const res = await fetch('http://localhost:8000/add', {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    })
+    const response = await res.json()
+    return true;
+  } catch(e) {
+    console.log('processWeather error: ', e)
   }
 }
