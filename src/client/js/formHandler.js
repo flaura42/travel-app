@@ -24,7 +24,7 @@ export const handleSubmit = async(loc) => {
     // const coords = { lat: 47.9, long: -122.2 }
     const weather = await handleWb(coords)
     const wCheck = await processWeather(weather);
-    if (wCheck === true) { Client.loadResults() }
+    if (wCheck === true) { Client.loadResults() }  
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -79,7 +79,25 @@ const processWeather = async(wData) => {
     city: wData.city_name,
     state: wData.state_code,
     country: wData.country_code,
-    timezone: wData.timezone
+    timezone: wData.timezone,  // Local IANA Timezone
+    weather: [
+      {
+        minTemp: wData.data[0].min_temp,
+        maxTemp: wData.data[0].max_temp,
+        date: wData.data[0].valid_date,  // yyyy-mm-dd
+        pop: wData.data[0].pop,  // Probability of Precipitation %
+        humid: wData.data[0].rh,  // Average relative humidity %
+        wIcon: wData.data[0].weather.icon.replace('n', 'd')
+      },
+      {
+        minTemp: wData.data[1].min_temp,
+        maxTemp: wData.data[1].max_temp,
+        date: wData.data[1].valid_date,  // yyyy-mm-dd
+        pop: wData.data[1].pop,  // Probability of Precipitation %
+        humid: wData.data[1].rh,  // Average relative humidity %
+        wIcon: wData.data[1].weather.icon.replace('n', 'd')
+      }
+    ]
   }
   try {
     const res = await fetch('http://localhost:8000/add', {
