@@ -42,9 +42,42 @@ const getGeo = async (destination) => {
 }
 
 app.post('/geo', async (req, res) => {
-  const destination = req.body.destination
-  console.log('Place to search: ', destination)
-  const coords = await getGeo(destination)
-  console.log('coords are: ', coords)
-  res.send({ coords: coords})
+  try {
+    const destination = req.body.destination
+    console.log('Place to search: ', destination)
+    const coords = await getGeo(destination)
+    res.send(coords)
+  } catch(e) {
+    console.log('/geo Post error: ', e)
+  }
+})
+
+
+const getWB = async (lat, long) => {
+  const url = `http://api.weatherbit.io/v2.0/forecast/daily?units=I&lat=${lat}&lon=${long}&key=${process.env.WB_KEY}`
+  console.log('url: ', url);
+  const response = await fetch(url)
+  try {
+    const data = await response.json()
+    console.log('from getWB: ', data.length);
+    return data
+  } catch(e) {
+    console.log('Error with WB: ', e)
+  }
+}
+
+app.post('/wb', async (req, res) => {
+  try {
+    // coords: {lat: 47.9, long: -122.2 }
+    const lat = req.body.coords.lat
+    const long = req.body.coords.long
+    const coords = req.body
+    // console.log('getting coords')
+    console.log('coords: ', lat, long)
+    const weather = await getWB(lat, long)
+    // console.log('weather forcast is: ', weather)
+    res.send(weather)
+  } catch(e) {
+    console.log('/wb Post error: ', e)
+  }
 })

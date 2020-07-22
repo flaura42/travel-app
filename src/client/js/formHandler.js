@@ -20,9 +20,12 @@ export const handleSubmit = async(loc) => {
   try {
     const vLoc = await Client.validateDest(loc);
     if (vLoc === false) { return }
-    handleGeo(vLoc)
+    const coords = await handleGeo(vLoc)
+    // const coords = { lat: 47.9, long: -122.2 }
+    console.log('Coords to wb: ', coords)
+    const weather = await handleWb(coords)
   } catch(e) {
-    console.log('Error with handleSubmit: ', e);
+    console.log('handleSubmit error: ', e);
   }
 }
 
@@ -39,11 +42,33 @@ const handleGeo = async(loc) => {
   })
   try {
     const data = await response.json()
-    if (!data.coords) {
+    if (!data) {
       alert('So sorry! Your location did not return any results.  Please verify your entries or try a neighboring city');
+      return
     }
-    console.log('handleSubmit Data: ', data)
+    console.log('handleGeo Data: ', data)
+    return data
   } catch(e) {
-    console.log('handleSubmit error: ', e);
+    console.log('handleGeo error: ', e);
+  }
+}
+
+const handleWb = async(coords) => {
+  const response = await fetch('http://localhost:8000/wb', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      coords: coords
+    })
+  })
+  try {
+    const data = await response.json()
+    console.log('handleWb Data: ', data)
+    return data
+  } catch(e) {
+    console.log('handleWb error: ', e);
   }
 }
