@@ -98,6 +98,7 @@ const processWeather = async(wData, days) => {
     const minTemp = Math.round(wData.data[i].min_temp)
     const pop = wData.data[i].pop // Probability of Precipitation %
     const humid = wData.data[i].rh  // Average relative humidity %
+    const wind = wData.data[i].wind_spd  // wind speed m/s
     const icon = wData.data[i].weather.icon.replace('n', 'd')
     const wf = {
       date: date,
@@ -105,6 +106,7 @@ const processWeather = async(wData, days) => {
       low: minTemp,
       pop: pop,
       humid: humid,
+      wind: wind,
       icon: icon
     }
     data.weather.push(wf)

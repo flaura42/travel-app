@@ -43,7 +43,7 @@ const fillPage = (data) => {
 
     let dp = document.createElement('p')
     dp.className = 'fdate-p'
-    dp.innerHTML = `<span class="bold">Forecast for:</span> ${data.weather[i].date}`
+    dp.innerHTML = `<span class="bold">${data.weather[i].date}</span>`
     fDiv.append(dp)
 
     let maxp = document.createElement('p')
@@ -58,13 +58,18 @@ const fillPage = (data) => {
 
     let popp = document.createElement('p')
     popp.className = 'pop-p'
-    popp.innerHTML = `<span class="bold">Rain Chance:</span> ${data.weather[i].pop}%`
+    popp.innerHTML = `<span class="bold">Precipitation:</span> ${data.weather[i].pop}%`
     fDiv.append(popp)
 
     let humip = document.createElement('p')
     humip.className = 'humi-p'
     humip.innerHTML = `<span class="bold">Humidity:</span> ${data.weather[i].humid}%`
     fDiv.append(humip)
+
+    let windp = document.createElement('p')
+    windp.className = 'humi-p'
+    windp.innerHTML = `<span class="bold">Wind:</span> ${data.weather[i].wind} mph`
+    fDiv.append(windp)
 
     let icon = document.createElement('img')
     icon.className = 'w-icon'
