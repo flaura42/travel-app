@@ -5,25 +5,37 @@ submitForm.addEventListener('click', (e) => {
   const city = document.getElementById('city').value;
   const state = document.getElementById('state').value;
   const country = document.getElementById('country').value;
-  const date = document.getElementById('date').value;
+  const sDate = document.getElementById('start-date').value;
+  const eDate = document.getElementById('end-date').value;
   const loc = {
     zip: zip,
     city: city,
     state: state,
     country: country,
-    date: date
+    start: sDate,
+    end: eDate
   }
   handleSubmit(loc)
 })
 
 export const handleSubmit = async(loc) => {
   try {
+    const vStart = await Client.validateDate(loc.start)
+    if (vStart === false) { return }
+    const start = await setDate(vStart)
+    console.log('start: ', start);
+
+    const vEnd = await Client.validateDate(loc.end)
+    if (vEnd === false) { return }
+    const end = await setDate(vEnd)
+    console.log('end: ', end);
+
     const vLoc = await Client.validateDest(loc);
     if (vLoc === false) { return }
     const coords = await handleGeo(vLoc)
     // const coords = { lat: 47.9, long: -122.2 }
     const weather = await handleWb(coords)
-    const wCheck = await processWeather(weather);
+    const wCheck = await processWeather(weather, start, end);
     if (wCheck === true) { Client.loadResults() }
     // Client.loadResults()
   } catch(e) {
@@ -75,36 +87,34 @@ const handleWb = async(coords) => {
   }
 }
 
-const processWeather = async(wData) => {
-
-  const ndate = new Date(wData.data[0].valid_date)
-  const date = ndate.toLocaleDateString()
-
-
+const processWeather = async(wData, start, end) => {
   const data = {
     city: wData.city_name,
     state: wData.state_code,
     country: wData.country_code,
     timezone: wData.timezone,  // Local IANA Timezone
-    weather: [
-      {
-        minTemp: Math.round(wData.data[0].min_temp),
-        maxTemp: Math.round(wData.data[0].max_temp),
-        date: date,
-        pop: wData.data[0].pop,  // Probability of Precipitation %
-        humid: wData.data[0].rh,  // Average relative humidity %
-        wIcon: wData.data[0].weather.icon.replace('n', 'd')
-      },
-      {
-        minTemp: Math.round(wData.data[1].min_temp),
-        maxTemp: Math.round(wData.data[1].max_temp),
-        date: date,
-        pop: wData.data[1].pop,  // Probability of Precipitation %
-        humid: wData.data[1].rh,  // Average relative humidity %
-        wIcon: wData.data[1].weather.icon.replace('n', 'd')
-      }
-    ]
+    weather: []
   }
+
+  for (let i=start; i<end+1 ; i++) {
+    const ndate = new Date(wData.data[i].valid_date)
+    const date = ndate.toLocaleDateString()
+    const maxTemp = Math.round(wData.data[i].max_temp)
+    const minTemp = Math.round(wData.data[i].min_temp)
+    const pop = wData.data[i].pop // Probability of Precipitation %
+    const humid = wData.data[i].rh  // Average relative humidity %
+    const icon = wData.data[i].weather.icon.replace('n', 'd')
+    const wf = {
+      date: date,
+      high: maxTemp,
+      low: minTemp,
+      pop: pop,
+      humid: humid,
+      icon: icon
+    }
+    data.weather.push(wf)
+  }
+
   try {
     const res = await fetch('http://localhost:8000/add', {
       method: 'POST',
@@ -119,5 +129,25 @@ const processWeather = async(wData) => {
     return true;
   } catch(e) {
     console.log('processWeather error: ', e)
+  }
+}
+
+const setDate = async(date) => {
+  try {
+    const newD = new Date()
+    const now = Date.parse(newD)
+    const tripS = Date.parse(date)
+    const diff = tripS - now
+    let day = 86400000
+    let days = diff / day
+    if (days >= Math.round(diff / day)) {
+      let days = Math.round(diff / day) + 2
+      return days
+    } else {
+      let days = Math.round(diff / day) + 1
+      return days
+    }
+  } catch(e) {
+    console.log('setDate error: ', e)
   }
 }

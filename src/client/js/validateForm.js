@@ -1,9 +1,4 @@
 export function validateDest(loc) {
-  const zipI = document.getElementById('zip');
-  const cityI = document.getElementById('city');
-  const stateI = document.getElementById('state');
-  const countryI = document.getElementById('country');
-
   let zip
   if (loc.zip) { zip = validateZip(loc.zip) } else { zip = '' }
   const city = validateLoc(loc.city);
@@ -44,9 +39,17 @@ export function validateDest(loc) {
 const validateZip = (zip) => {
   const regex = /^\d{1,5}$/;
   if (regex.test(zip)) { return zip }
-  else { alert('Please enter a 5 digit postal code') }
+  else { alert('Please enter a 5 digit postal code.') }
 }
 
 const validateLoc = (loc) => { return encodeURIComponent(loc) }
 
-  // const dateI = document.getElementById('date');
+// https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript/49178339
+export const validateDate = (date) => {
+  const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/;
+  if (regex.test(date)) { return date }
+  else {
+    alert('Please enter a valid date in MM/DD/YYYY format.')
+    return false
+  };
+}

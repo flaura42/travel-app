@@ -48,12 +48,12 @@ const fillPage = (data) => {
 
     let maxp = document.createElement('p')
     maxp.className = 'max-p'
-    maxp.innerHTML = `<span class="bold">High:</span> ${data.weather[i].maxTemp}&#8457`
+    maxp.innerHTML = `<span class="bold">High:</span> ${data.weather[i].high}&#8457`
     fDiv.append(maxp)
 
     let minp = document.createElement('p')
     minp.className = 'min-p'
-    minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].minTemp}&#8457`
+    minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].low}&#8457`
     fDiv.append(minp)
 
     let popp = document.createElement('p')
@@ -68,7 +68,7 @@ const fillPage = (data) => {
 
     let icon = document.createElement('img')
     icon.className = 'w-icon'
-    icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].wIcon}.png`
+    icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].icon}.png`
     fDiv.append(icon)
 
     wDiv.append(fDiv)
