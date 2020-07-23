@@ -20,23 +20,18 @@ submitForm.addEventListener('click', (e) => {
 
 export const handleSubmit = async(loc) => {
   try {
-    const vStart = await Client.validateDate(loc.start)
-    if (vStart === false) { return }
-    const start = await setDate(vStart)
-    console.log('start: ', start);
-
-    const vEnd = await Client.validateDate(loc.end)
-    if (vEnd === false) { return }
-    const end = await setDate(vEnd)
-    console.log('end: ', end);
-
+    const days = await Client.validateDates(loc.start, loc.end)
+    if (days === false) { return }
     const vLoc = await Client.validateDest(loc);
     if (vLoc === false) { return }
+
     const coords = await handleGeo(vLoc)
-    // const coords = { lat: 47.9, long: -122.2 }
-    const weather = await handleWb(coords)
-    const wCheck = await processWeather(weather, start, end);
-    if (wCheck === true) { Client.loadResults() }
+    if (coords) {
+      const weather = await handleWb(coords)
+      const wCheck = await processWeather(weather, days);
+      if (wCheck === true) { Client.loadResults() }
+    }
+    else { return }
     // Client.loadResults()
   } catch(e) {
     console.log('handleSubmit error: ', e);
@@ -56,9 +51,9 @@ const handleGeo = async(loc) => {
   })
   try {
     const data = await response.json()
-    if (!data) {
+    if (data === false) {
       alert('So sorry! Your location did not return any results.  Please verify your entries or try a neighboring city');
-      return
+      return data
     }
     console.log('handleGeo Data: ', data)
     return data
@@ -87,7 +82,7 @@ const handleWb = async(coords) => {
   }
 }
 
-const processWeather = async(wData, start, end) => {
+const processWeather = async(wData, days) => {
   const data = {
     city: wData.city_name,
     state: wData.state_code,
@@ -96,7 +91,7 @@ const processWeather = async(wData, start, end) => {
     weather: []
   }
 
-  for (let i=start; i<end+1 ; i++) {
+  for (let i=days[0]; i<days[1] ; i++) {
     const ndate = new Date(wData.data[i].valid_date)
     const date = ndate.toLocaleDateString()
     const maxTemp = Math.round(wData.data[i].max_temp)
@@ -129,25 +124,5 @@ const processWeather = async(wData, start, end) => {
     return true;
   } catch(e) {
     console.log('processWeather error: ', e)
-  }
-}
-
-const setDate = async(date) => {
-  try {
-    const newD = new Date()
-    const now = Date.parse(newD)
-    const tripS = Date.parse(date)
-    const diff = tripS - now
-    let day = 86400000
-    let days = diff / day
-    if (days >= Math.round(diff / day)) {
-      let days = Math.round(diff / day) + 2
-      return days
-    } else {
-      let days = Math.round(diff / day) + 1
-      return days
-    }
-  } catch(e) {
-    console.log('setDate error: ', e)
   }
 }

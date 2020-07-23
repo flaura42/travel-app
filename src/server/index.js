@@ -41,7 +41,6 @@ app.post('/add', (req, res) => {
 
 app.get('/all', (req, res) => {
   res.send(projectData)
-
 })
 
 const getGeo = async (destination) => {
@@ -50,12 +49,15 @@ const getGeo = async (destination) => {
   const response = await fetch(url)
   try {
     const data = await response.json()
-    const lat = data.postalCodes[0].lat
-    const long = data.postalCodes[0].lng
-    console.log('from getGeo: ', lat, long);
-    return ({lat, long})
+    if (data.postalCodes.length !== 0) {
+      const lat = data.postalCodes[0].lat
+      const long = data.postalCodes[0].lng
+      console.log('from getGeo: ', lat, long);
+      return ({lat, long})
+    }
+    else { return new Boolean(false) }
   } catch(e) {
-    console.log('Error with geo: ', e)
+    console.log('getGeo error: ', e)
   }
 }
 
@@ -66,7 +68,7 @@ app.post('/geo', async (req, res) => {
     const coords = await getGeo(destination)
     res.send(coords)
   } catch(e) {
-    console.log('/geo Post error: ', e)
+    console.log('/geo post error: ', e)
   }
 })
 
@@ -79,22 +81,19 @@ const getWB = async (lat, long) => {
     const data = await response.json()
     return data
   } catch(e) {
-    console.log('Error with WB: ', e)
+    console.log('getWB error: ', e)
   }
 }
 
 app.post('/wb', async (req, res) => {
   try {
-    // coords: {lat: 47.9, long: -122.2 }
     const lat = req.body.coords.lat
     const long = req.body.coords.long
     const coords = req.body
-    // console.log('getting coords')
     console.log('coords: ', lat, long)
     const weather = await getWB(lat, long)
-    // console.log('weather forcast is: ', weather)
     res.send(weather)
   } catch(e) {
-    console.log('/wb Post error: ', e)
+    console.log('/wb post error: ', e)
   }
 })

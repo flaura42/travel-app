@@ -45,11 +45,34 @@ const validateZip = (zip) => {
 const validateLoc = (loc) => { return encodeURIComponent(loc) }
 
 // https://stackoverflow.com/questions/6177975/how-to-validate-date-with-format-mm-dd-yyyy-in-javascript/49178339
-export const validateDate = (date) => {
+export const validateDates = (start, end) => {
   const regex = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(20)\d{2}$/;
-  if (regex.test(date)) { return date }
-  else {
-    alert('Please enter a valid date in MM/DD/YYYY format.')
+  if (!regex.test(start)) {
+    alert('Please enter a valid departure date in MM/DD/YYYY format.')
     return false
   };
+  if (!regex.test(end)) {
+    alert('Please enter a valid return date in MM/DD/YYYY format.')
+    return false
+  };
+
+  start = Date.parse(start)
+  end = Date.parse(end)
+  const range = end - start
+  if (range < 0) {
+    alert('Are you returning before you leave?')
+  }
+  const newD = new Date()
+  const now = Date.parse(newD)
+  const day = 86400000
+
+  const sDiff = start - now
+  let sOffset = Math.trunc(sDiff / day) + 2
+  console.log('start', sOffset)
+
+  let eDiff = end - now
+  let eOffset = Math.trunc(eDiff / day) + 3
+  console.log('end', eOffset)
+
+  return [sOffset, eOffset]
 }
