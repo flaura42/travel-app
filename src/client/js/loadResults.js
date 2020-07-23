@@ -46,15 +46,15 @@ const fillPage = (data) => {
     dp.innerHTML = `<span class="bold">Forecast for:</span> ${data.weather[i].date}`
     fDiv.append(dp)
 
-    let minp = document.createElement('p')
-    minp.className = 'min-p'
-    minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].minTemp}&#8457`
-    fDiv.append(minp)
-
     let maxp = document.createElement('p')
     maxp.className = 'max-p'
     maxp.innerHTML = `<span class="bold">High:</span> ${data.weather[i].maxTemp}&#8457`
     fDiv.append(maxp)
+
+    let minp = document.createElement('p')
+    minp.className = 'min-p'
+    minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].minTemp}&#8457`
+    fDiv.append(minp)
 
     let popp = document.createElement('p')
     popp.className = 'pop-p'

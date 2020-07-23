@@ -24,7 +24,8 @@ export const handleSubmit = async(loc) => {
     // const coords = { lat: 47.9, long: -122.2 }
     const weather = await handleWb(coords)
     const wCheck = await processWeather(weather);
-    if (wCheck === true) { Client.loadResults() }  
+    if (wCheck === true) { Client.loadResults() }
+    // Client.loadResults()
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -75,6 +76,11 @@ const handleWb = async(coords) => {
 }
 
 const processWeather = async(wData) => {
+
+  const ndate = new Date(wData.data[0].valid_date)
+  const date = ndate.toLocaleDateString()
+
+
   const data = {
     city: wData.city_name,
     state: wData.state_code,
@@ -82,17 +88,17 @@ const processWeather = async(wData) => {
     timezone: wData.timezone,  // Local IANA Timezone
     weather: [
       {
-        minTemp: wData.data[0].min_temp,
-        maxTemp: wData.data[0].max_temp,
-        date: wData.data[0].valid_date,  // yyyy-mm-dd
+        minTemp: Math.round(wData.data[0].min_temp),
+        maxTemp: Math.round(wData.data[0].max_temp),
+        date: date,
         pop: wData.data[0].pop,  // Probability of Precipitation %
         humid: wData.data[0].rh,  // Average relative humidity %
         wIcon: wData.data[0].weather.icon.replace('n', 'd')
       },
       {
-        minTemp: wData.data[1].min_temp,
-        maxTemp: wData.data[1].max_temp,
-        date: wData.data[1].valid_date,  // yyyy-mm-dd
+        minTemp: Math.round(wData.data[1].min_temp),
+        maxTemp: Math.round(wData.data[1].max_temp),
+        date: date,
         pop: wData.data[1].pop,  // Probability of Precipitation %
         humid: wData.data[1].rh,  // Average relative humidity %
         wIcon: wData.data[1].weather.icon.replace('n', 'd')
