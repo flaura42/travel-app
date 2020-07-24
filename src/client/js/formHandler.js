@@ -1,6 +1,11 @@
 const submitForm = document.getElementById('submit-form');
 submitForm.addEventListener('click', (e) => {
   e.preventDefault()
+
+  const section = document.getElementById('results-section')
+  const div = document.getElementById('results-div')
+  if (document.contains(div)) { div.remove() }
+
   const zip = document.getElementById('zip').value;
   const city = document.getElementById('city').value;
   const state = document.getElementById('state').value;

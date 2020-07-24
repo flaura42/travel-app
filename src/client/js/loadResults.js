@@ -16,15 +16,14 @@ export const loadResults = async() => {
   }
 }
 
-const section = document.getElementById('results-section')
-const div = document.createElement('div')
-div.id = 'results-div'
-
-const h2 = document.createElement('h2')
-h2.innerHTML = 'Info on Travel Plans:'
-div.append(h2)
-
 const fillPage = (data) => {
+  const section = document.getElementById('results-section')
+  const div = document.createElement('div')
+  div.id = 'results-div'
+
+  const h2 = document.createElement('h2')
+  h2.innerHTML = 'Info on Travel Plans:'
+  div.append(h2)
   const lDiv = document.createElement('div');
   lDiv.id = 'location-div'
   const h3 = document.createElement('h3')
