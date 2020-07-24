@@ -3,6 +3,7 @@ import { validateDest } from './js/validateForm'
 import { validateDates } from './js/validateForm'
 import { addCountries } from './js/addCountries'
 import { loadResults } from './js/loadResults'
+import { getDateRange } from './js/getDateRange'
 
 
 import './styles/base.scss'
@@ -16,6 +17,7 @@ export {
   handleSubmit,
   validateDest,
   validateDates,
+  getDateRange,
   addCountries,
   loadResults
 }

@@ -72,10 +72,16 @@ app.post('/geo', async (req, res) => {
   }
 })
 
-
-const getWB = async (lat, long) => {
-  const url = `http://api.weatherbit.io/v2.0/forecast/daily?units=I&lat=${lat}&lon=${long}&key=${process.env.WB_KEY}`
-  console.log('url: ', url);
+// get historical or forecast weather depending on date range
+const getWB = async (lat, long, start, end) => {
+  let url =''
+  if (start) {
+    url = `http://api.weatherbit.io/v2.0/history/daily?units=I&lat=${lat}&lon=${long}&start_date=${start}&end_date=${end}&key=${process.env.WB_KEY}`
+    console.log('url: ', url);
+  } else {
+    url = `http://api.weatherbit.io/v2.0/forecast/daily?units=I&lat=${lat}&lon=${long}&key=${process.env.WB_KEY}`
+    console.log('url: ', url);
+  }
   const response = await fetch(url)
   try {
     const data = await response.json()
@@ -89,9 +95,10 @@ app.post('/wb', async (req, res) => {
   try {
     const lat = req.body.coords.lat
     const long = req.body.coords.long
-    const coords = req.body
+    const start = req.body.range.isos
+    const end = req.body.range.isoe
     console.log('coords: ', lat, long)
-    const weather = await getWB(lat, long)
+    const weather = await getWB(lat, long, start, end)
     res.send(weather)
   } catch(e) {
     console.log('/wb post error: ', e)

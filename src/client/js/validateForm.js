@@ -61,18 +61,7 @@ export const validateDates = (start, end) => {
   const range = end - start
   if (range < 0) {
     alert('Are you returning before you leave?')
+    return false
   }
-  const newD = new Date()
-  const now = Date.parse(newD)
-  const day = 86400000
-
-  const sDiff = start - now
-  let sOffset = Math.trunc(sDiff / day) + 2
-  console.log('start', sOffset)
-
-  let eDiff = end - now
-  let eOffset = Math.trunc(eDiff / day) + 3
-  console.log('end', eOffset)
-
-  return [sOffset, eOffset]
+  return true
 }

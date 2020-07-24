@@ -20,19 +20,20 @@ submitForm.addEventListener('click', (e) => {
 
 export const handleSubmit = async(loc) => {
   try {
-    const days = await Client.validateDates(loc.start, loc.end)
-    if (days === false) { return }
+    let range = {}
+    const valDate = await Client.validateDates(loc.start, loc.end)
+    if (!valDate) { return }
+    else { range = Client.getDateRange(loc.start, loc.end)}
     const vLoc = await Client.validateDest(loc);
     if (vLoc === false) { return }
 
     const coords = await handleGeo(vLoc)
     if (coords) {
-      const weather = await handleWb(coords)
-      const wCheck = await processWeather(weather, days);
+      const weather = await handleWb(coords, range)
+      const wCheck = await processWeather(weather, range);
       if (wCheck === true) { Client.loadResults() }
     }
     else { return }
-    // Client.loadResults()
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -62,7 +63,8 @@ const handleGeo = async(loc) => {
   }
 }
 
-const handleWb = async(coords) => {
+const handleWb = async(coords, range) => {
+  console.log(range)
   const response = await fetch('http://localhost:8000/wb', {
     method: 'POST',
     credentials: 'same-origin',
@@ -70,7 +72,8 @@ const handleWb = async(coords) => {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      coords: coords
+      coords: coords,
+      range: range
     })
   })
   try {
@@ -82,7 +85,7 @@ const handleWb = async(coords) => {
   }
 }
 
-const processWeather = async(wData, days) => {
+const processWeather = async(wData, range) => {
   const data = {
     city: wData.city_name,
     state: wData.state_code,
@@ -90,28 +93,58 @@ const processWeather = async(wData, days) => {
     timezone: wData.timezone,  // Local IANA Timezone
     weather: []
   }
-
-  for (let i=days[0]; i<days[1] ; i++) {
-    const ndate = new Date(wData.data[i].valid_date)
-    const date = ndate.toLocaleDateString()
-    const maxTemp = Math.round(wData.data[i].max_temp)
-    const minTemp = Math.round(wData.data[i].min_temp)
-    const pop = wData.data[i].pop // Probability of Precipitation %
-    const humid = wData.data[i].rh  // Average relative humidity %
-    const wind = wData.data[i].wind_spd  // wind speed m/s
-    const icon = wData.data[i].weather.icon.replace('n', 'd')
-    const wf = {
+  if (range.isos) {
+    console.log('historical')
+    let vdate = wData.data[0].datetime
+    let month = vdate.slice(5, 7)
+    let day = vdate.slice(8, 10)
+    let year = vdate.slice(0, 4)
+    let date = `${month}/${day}/${year}`
+    console.log(date)
+    const maxTemp = Math.round(wData.data[0].max_temp)
+    const minTemp = Math.round(wData.data[0].min_temp)
+    const humid = wData.data[0].rh  // Average relative humidity %
+    const wind = wData.data[0].wind_spd  // wind speed m/s
+    const wh = {
       date: date,
       high: maxTemp,
       low: minTemp,
-      pop: pop,
       humid: humid,
       wind: wind,
-      icon: icon
     }
-    data.weather.push(wf)
+    data.weather.push(wh)
+  } else {
+    console.log('forecast')
+    let s = 0
+    for (let i=range.sOffset; i<=range.eOffset; i++) {
+      s++
+      if (s > 5) { break }
+      if (i > 15) { break }
+      let vdate = wData.data[i].valid_date
+      let month = vdate.slice(5, 7)
+      let day = vdate.slice(8, 10)
+      let year = vdate.slice(0, 4)
+      let date = `${month}/${day}/${year}`
+      console.log(date)
+      const maxTemp = Math.round(wData.data[i].max_temp)
+      const minTemp = Math.round(wData.data[i].min_temp)
+      const pop = wData.data[i].pop // Probability of Precipitation %
+      const humid = wData.data[i].rh  // Average relative humidity %
+      const wind = wData.data[i].wind_spd  // wind speed m/s
+      const icon = wData.data[i].weather.icon.replace('n', 'd')
+      const wf = {
+        date: date,
+        high: maxTemp,
+        low: minTemp,
+        pop: pop,
+        humid: humid,
+        wind: wind,
+        icon: icon
+      }
+      data.weather.push(wf)
+      console.log(wf)
+    }
   }
-
   try {
     const res = await fetch('http://localhost:8000/add', {
       method: 'POST',

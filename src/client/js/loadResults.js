@@ -17,7 +17,12 @@ export const loadResults = async() => {
 }
 
 const section = document.getElementById('results-section')
-const div = document.getElementById('results-div')
+const div = document.createElement('div')
+div.id = 'results-div'
+
+const h2 = document.createElement('h2')
+h2.innerHTML = 'Info on Travel Plans:'
+div.append(h2)
 
 const fillPage = (data) => {
   const lDiv = document.createElement('div');
@@ -34,7 +39,11 @@ const fillPage = (data) => {
   const wDiv = document.createElement('div');
   wDiv.id = 'weather-div'
   const h4 = document.createElement('h4')
-  h4.innerText = 'Weather Forecast'
+  if (data.weather.length === 1) {
+    h4.innerText = 'Historical Weather (Travel dates outside forecast range)'
+  } else {
+    h4.innerText = 'Weather Forecast'
+  }
   wDiv.append(h4)
 
   for (let i=0; i<data.weather.length; i++) {
@@ -56,10 +65,13 @@ const fillPage = (data) => {
     minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].low}&#8457`
     fDiv.append(minp)
 
-    let popp = document.createElement('p')
-    popp.className = 'pop-p'
-    popp.innerHTML = `<span class="bold">Precipitation:</span> ${data.weather[i].pop}%`
-    fDiv.append(popp)
+    // Rain change not available for historical weather
+    if (data.weather[i].pop >= 0) {
+      let popp = document.createElement('p')
+      popp.className = 'pop-p'
+      popp.innerHTML = `<span class="bold">Precipitation:</span> ${data.weather[i].pop}%`
+      fDiv.append(popp)
+    }
 
     let humip = document.createElement('p')
     humip.className = 'humi-p'
@@ -71,16 +83,18 @@ const fillPage = (data) => {
     windp.innerHTML = `<span class="bold">Wind:</span> ${data.weather[i].wind} mph`
     fDiv.append(windp)
 
-    let icon = document.createElement('img')
-    icon.className = 'w-icon'
-    icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].icon}.png`
-    fDiv.append(icon)
-
+    // Icon not available for historical weather
+    if (data.weather[i].icon) {
+      let icon = document.createElement('img')
+      icon.className = 'w-icon'
+      icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].icon}.png`
+      fDiv.append(icon)
+    }
     wDiv.append(fDiv)
     div.append(wDiv)
   }
 
   // Keep at end
+  section.append(div)
   section.classList.remove('invisible')
-
 }
