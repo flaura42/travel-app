@@ -36,7 +36,10 @@ export const handleSubmit = async(loc) => {
     if (coords) {
       const weather = await handleWb(coords, range)
       const wCheck = await processWeather(weather, range);
-      if (wCheck === true) { Client.loadResults() }
+      if (wCheck === true) {
+        const pix = await handlePix(weather)
+        Client.loadResults()
+      }
     }
     else { return }
   } catch(e) {
@@ -162,6 +165,57 @@ const processWeather = async(wData, range) => {
     })
     const response = await res.json()
     return true;
+  } catch(e) {
+    console.log('processWeather error: ', e)
+  }
+}
+
+
+const handlePix = async(d) => {
+  const dest = {
+    city: d.city_name,
+    state: d.state_code,
+    country: d.country_code
+  }
+  const response = await fetch('http://localhost:8000/pix', {
+    method: 'POST',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      dest: dest
+    })
+  })
+  try {
+    let pixUrl
+    const data = await response.json()
+    if (!data) {
+      pixUrl = 'b303fb4efa6d44290d098188251d2976.jpg'
+      console.log('no images!')
+    } else {
+      pixUrl = data[0].webformatURL
+    }
+    processPix(pixUrl)
+  } catch(e) {
+    console.log('handlePix error: ', e);
+  }
+}
+
+const processPix = async(pix) => {
+  try {
+    const res = await fetch('http://localhost:8000/add', {
+      method: 'POST',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        pixUrl: pix
+      })
+    })
+    const response = await res.json()
   } catch(e) {
     console.log('processWeather error: ', e)
   }

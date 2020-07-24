@@ -104,3 +104,48 @@ app.post('/wb', async (req, res) => {
     console.log('/wb post error: ', e)
   }
 })
+
+
+const getPix = async (dest) => {
+  const eDest = encodeURIComponent(dest)
+  const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${eDest}&safesearch=true`
+  console.log('url: ', url);
+  const response = await fetch(url)
+  try {
+    const data = await response.json()
+    if (data.hits.length !== 0) {
+      const images = data.hits
+      console.log('from getPix: ', images.length);
+      return images
+    }
+    else { return new Boolean(false) }
+  } catch(e) {
+    console.log('getPix error: ', e)
+  }
+}
+
+app.post('/pix', async (req, res) => {
+  try {
+    let dest
+    const city = req.body.dest.city
+    const state = req.body.dest.state
+    const country = req.body.dest.country
+    if (!state) {
+      dest = `${city}, ${country}`
+    } else {
+      dest = `${city}, ${state}`
+    }
+    console.log('image search: ', dest)
+    const images = await getPix(dest)
+    if (images) {
+      res.send(images)
+    } else {
+      dest = country
+      const images = await getPix(dest)
+      res.send(images)
+    }
+
+  } catch(e) {
+    console.log('/pix post error: ', e)
+  }
+})

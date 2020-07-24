@@ -92,8 +92,17 @@ const fillPage = (data) => {
     wDiv.append(fDiv)
     div.append(wDiv)
   }
+  section.append(div)
+
+  const pix = document.createElement('div')
+  pix.id = 'pix-div'
+  const img = document.createElement('img')
+  img.id = 'pix-img'
+  img.src = data.pixUrl
+  pix.append(img)
+  section.append(pix)
 
   // Keep at end
-  section.append(div)
+
   section.classList.remove('invisible')
 }
