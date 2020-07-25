@@ -3,15 +3,40 @@ $primary-color: #222;
 $secondary-color: #eee;
 
 body {
-  background-color: $secondary-color;
-  color: $primary-color;
+  background-color: $primary-color;
+  color: $secondary-color;
   font: 100% $font-stack;
   margin: 0 auto;
   max-width: 1100px;
-  padding: 20px;
+}
+
+main {
+  padding: 10px;
+}
+
+h1 {
+  font-size: 2.25em;
+  margin: 0;
+  padding: 10px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2em;
+  margin: 25px 0 10px;
+  text-align: center;
 }
 
 
 .invisible {
   display: none;
+}
+
+.flex-row {
+  display: flex;
+}
+
+.flex-column {
+  display: flex;
+  flex-direction: column;
 }

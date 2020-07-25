@@ -1,14 +1,47 @@
 form {
+  display: grid;
+  grid-template: 1fr 1fr 1fr 1fr 1fr / 1fr 1fr 1fr 1fr 1fr 1fr;
+  margin: auto;
+}
+
+#form-section {
+  width: 100%;
+}
+
+
+.instructions {
+  font-size: 1.5em;
+  font-weight: bold;
+  grid-column: 1 / 7;
+  text-align: center;
+}
+
+.destination-div {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
 }
 
 .destination {
   display: flex;
+  flex-direction: column;
 }
 
 label {
-  margin: 10px 5px;
+  align-self: center;
+  font-size: 1.15em;
+  margin: 0 5px;
+}
+
+.box {
+  align-self: center;
+  background-color: #eee;
+  border: 1px solid #333;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 1em;
+  height: 40px;
+  margin: 10px;
+  padding: 2px 10px;
 }
 
 input {
@@ -16,23 +49,58 @@ input {
 }
 
 .or {
-  margin: 10px;
+  align-self: center;
+  margin: 10px  50px;
   font-size: 1.2em;
   font-weight: bold;
 }
 
+.far-left {
+  grid-column: 1 / 1;
+}
+
+.left {
+  grid-column: 2 / 2;
+}
+
+.middle {
+  grid-column: 3 / 3;
+}
+
+.middle-right {
+  grid-column: 4 / 4
+}
+.right {
+  grid-column: 5 / 5;
+}
+
+.far-right {
+  grid-column: 6 / 6;
+}
+
+.row-3 {
+  grid-row: 3 / 3;
+}
+
+.end {
+  justify-self: end;
+}
+
+.margin-top {
+  margin-top: 25px;
+}
 
 #submit-form {
-  background-color: rgb(181, 218, 255);
-  // background: linear-gradient(rgb(48, 41, 251, 0.75), rgb(181, 218, 255), rgb(48, 41, 251, 0.75));
+  // background-color: rgb(181, 218, 255);
+  background: linear-gradient(rgb(48, 41, 251), rgb(181, 218, 255), rgb(48, 41, 251));
   color: #222;
   font-size: 1.2em;
   font-weight: bold;
-  padding: 15px 20px;
+  padding: 10px;
 
   &:hover {
-  background-color: #222;
-  // background: linear-gradient(rgb(181, 218, 255), rgb(48, 41, 251, 0.75), rgb(181, 218, 255));
-  color: rgb(181, 218, 255);
+  // background-color: #222;
+  background: linear-gradient(rgb(181, 218, 255), rgb(48, 41, 251), rgb(181, 218, 255));
+  color: #eee;
   }
 }

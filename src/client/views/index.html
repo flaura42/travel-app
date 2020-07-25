@@ -11,19 +11,18 @@
     </header>
     <main>
       <section id="form-section">
-        <h2>Enter your travel plans</h2>
+        <h2>Travel Plans</h2>
         <form id="form">
-          <h3>Please enter either a postal code or location details</h3>
-          <label for="zip">Enter Postal Code:</label>
-          <input type="text" id="zip" name="zip">
-          <p class="or">OR</p>
-          <div class="destination">
-            <label for="city">Enter City:</label>
-            <input type="text" id="city" name="city">
-            <label for="state">Enter State:</label>
-            <input type="text" id="state" name="state">
-            <label for="country">Enter Country</label>
-            <select id="country" class="" name="country">
+          <p class="instructions">Please enter either a postal code or location details</p>
+          <label for="zip" class="far-left row-3 end">Postal Code:</label>
+          <input type="text" id="zip" name="zip" class="box left row-3">
+          <p class="or middle-right row-3">OR</p>
+          <label for="city" class="right end">City:</label>
+          <input type="text" id="city" name="city" class="box far-right">
+          <label for="state" class="right end">State:</label>
+          <input type="text" id="state" name="state" class="box far-right">
+          <label for="country" class="right end">Country:</label>
+          <select id="country" class="box far-right" name="country">
               <option value="" disabled selected hidden>Choose one:</option>
               <option class="country-option" value="AF">Afghanistan</option>
               <option class="country-option" value="AX">Aland Islands</option>
@@ -279,20 +278,18 @@
               <option class="country-option" value="ZM">Zambia</option>
               <option class="country-option" value="ZW">Zimbabwe</option>
             </select>
-          </div>
-          <label for="start-date">When are you departing?</label>
-          <input type="text" id="start-date" name="start-date" placeholder="mm/dd/yyyy">
-          <label for="end-date">When are you returning?</label>
-          <input type="text" id="end-date" name="end-date" placeholder="mm/dd/yyyy">
-
-          <button id="submit-form" class="box" type="submit">Get Info</button>
+          <label for="start-date" class="far-left end margin-top">Departure:</label>
+          <input type="text" id="start-date" name="start-date margin-top" class="box left margin-top" placeholder="mm/dd/yyyy">
+          <label for="end-date" class="middle end margin-top">Return:</label>
+          <input type="text" id="end-date" name="end-date" class="box middle-right margin-top" placeholder="mm/dd/yyyy">
+          <button id="submit-form" class="box far-right margin-top" type="submit">Submit Form</button>
         </form>
       </section>
       <section id="results-section" class="invisible"></section>
     </main>
     <footer>
+      <a href="https://pixabay.com/"><img width="70px" src="../media/pixabay_logo.png"></a>
       <p class="copy">&copy;2020 Laura Franklin</p>
-      <a href="https://pixabay.com/"><img width="50px" src="../media/pixabay_logo.png"></a>
     </footer>
   </body>
 </html>
