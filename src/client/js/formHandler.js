@@ -1,7 +1,6 @@
 const submitForm = document.getElementById('submit-form');
 submitForm.addEventListener('click', (e) => {
   e.preventDefault()
-
   const section = document.getElementById('results-section')
   const div = document.getElementById('results-div')
   if (document.contains(div)) { div.remove() }
@@ -25,6 +24,7 @@ submitForm.addEventListener('click', (e) => {
 
 export const handleSubmit = async(loc) => {
   try {
+    // Client.loadResults()
     let range = {}
     const valDate = await Client.validateDates(loc.start, loc.end)
     if (!valDate) { return }
@@ -99,6 +99,8 @@ const processWeather = async(wData, range) => {
     state: wData.state_code,
     country: wData.country_code,
     timezone: wData.timezone,  // Local IANA Timezone
+    lat: wData.lat,
+    long: wData.lon,
     weather: []
   }
   if (range.isos) {
@@ -190,8 +192,9 @@ const handlePix = async(d) => {
   try {
     let pixUrl
     const data = await response.json()
+    console.log(data)
     if (!data) {
-      pixUrl = 'b303fb4efa6d44290d098188251d2976.jpg'
+      pixUrl = 'b798cf65cc50b33b79005263c54b32fd.jpg'
       console.log('no images!')
     } else {
       pixUrl = data[0].webformatURL

@@ -4,6 +4,7 @@ import { validateDates } from './js/validateForm'
 import { addCountries } from './js/addCountries'
 import { loadResults } from './js/loadResults'
 import { getDateRange } from './js/getDateRange'
+import { getMap } from './js/map'
 
 
 import './styles/base.scss'
@@ -18,6 +19,7 @@ export {
   validateDest,
   validateDates,
   getDateRange,
+  getMap,
   addCountries,
   loadResults
 }

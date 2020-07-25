@@ -1,3 +1,5 @@
+import { getMap } from './map'
+
 export const loadResults = async() => {
   try {
     const res = await fetch('http://localhost:8000/all', {
@@ -18,22 +20,48 @@ export const loadResults = async() => {
 
 const fillPage = (data) => {
   const section = document.getElementById('results-section')
-  const div = document.createElement('div')
-  div.id = 'results-div'
 
   const h2 = document.createElement('h2')
-  h2.innerHTML = 'Info on Travel Plans:'
-  div.append(h2)
+  h2.innerHTML = 'Travel Plan Details'
+  section.append(h2)
+
   const lDiv = document.createElement('div');
   lDiv.id = 'location-div'
   const h3 = document.createElement('h3')
+  h3.className = 'dest-name'
   h3.innerText = `${data.city}, ${data.state}, ${data.country}`
   lDiv.append(h3)
 
   const tp = document.createElement('p')
+  tp.className = 'timezone'
   tp.innerHTML = `<span class="bold">Timezone:</span> ${data.timezone}`
   lDiv.append(tp)
-  div.append(lDiv)
+
+  const mapDiv = document.createElement('div')
+  mapDiv.id = 'map-div'
+  lDiv.append(mapDiv)
+
+  const pix = document.createElement('div')
+  pix.id = 'pix-div'
+  if (data.pixUrl === 'b798cf65cc50b33b79005263c54b32fd.jpg') {
+    const pixp = document.createElement('p')
+    pixp.innerHTML = 'Sorry, no picture available.  Here is one of a beach!'
+    pix.append(pixp)
+  }
+  const img = document.createElement('img')
+  img.id = 'pix-img'
+  img.src = data.pixUrl
+
+  pix.append(img)
+  lDiv.append(pix)
+  section.append(lDiv)
+
+  const coords = { lat: data.lat, long: data.long }
+  Client.getMap(coords)
+
+
+  const div = document.createElement('div')
+  div.id = 'results-div'
 
   const wDiv = document.createElement('div');
   wDiv.id = 'weather-div'
@@ -94,13 +122,9 @@ const fillPage = (data) => {
   }
   section.append(div)
 
-  const pix = document.createElement('div')
-  pix.id = 'pix-div'
-  const img = document.createElement('img')
-  img.id = 'pix-img'
-  img.src = data.pixUrl
-  pix.append(img)
-  section.append(pix)
+
+
+
 
   // Keep at end
 
