@@ -44,7 +44,6 @@ app.post('/add', (req, res) => {
     data: data
   })
   Object.assign(projectData, data)
-  console.log('Updated projectData: ', projectData)
 })
 
 app.post('/geo', async (req, res) => {
@@ -59,22 +58,45 @@ app.post('/geo', async (req, res) => {
 })
 
 const getGeo = async (destination) => {
-  const url = `http://api.geonames.org/postalCodeSearchJSON?${destination}&maxRows=10&username=${process.env.GEO_ID}`
+  const url = `http://api.geonames.org/searchJSON?username=${process.env.GEO_ID}${destination}`
   console.log('url: ', url);
   const response = await fetch(url)
   try {
     const data = await response.json()
-    if (data.postalCodes.length !== 0) {
-      const lat = data.postalCodes[0].lat
-      const long = data.postalCodes[0].lng
+    if (data.geonames.length !== 0) {
+      const lat = data.geonames[0].lat
+      const long = data.geonames[0].lng
+      console.log('from getGeo: ', data.geonames[0]);
       console.log('from getGeo: ', lat, long);
-      return ({lat, long})
+      return {
+        lat: lat,
+        long: long
+      }
     }
     else { return new Boolean(false) }
   } catch(e) {
     console.log('getGeo error: ', e)
   }
 }
+
+// const getGeo = async (destination) => {
+//   const url = `http://api.geonames.org/postalCodeSearchJSON?${destination}&maxRows=10&username=${process.env.GEO_ID}`
+//   console.log('url: ', url);
+//   const response = await fetch(url)
+//   try {
+//     const data = await response.json()
+//     if (data.postalCodes.length !== 0) {
+//       // const lat = data.postalCodes[0].lat
+//       // const long = data.postalCodes[0].lng
+//       console.log('from getGeo: ', data.postalCodes);
+//       // console.log('from getGeo: ', lat, long);
+//       return data.postalCodes
+//     }
+//     else { return new Boolean(false) }
+//   } catch(e) {
+//     console.log('getGeo error: ', e)
+//   }
+// }
 
 app.post('/wb', async (req, res) => {
   try {

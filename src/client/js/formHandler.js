@@ -5,14 +5,12 @@ submitForm.addEventListener('click', (e) => {
   const section = document.getElementById('results-section')
   section.innerHTML=''
 
-  const zip = document.getElementById('zip').value;
   const city = document.getElementById('city').value;
   const state = document.getElementById('state').value;
   const country = document.getElementById('country').value;
   const sDate = document.getElementById('start-date').value;
   const eDate = document.getElementById('end-date').value;
   const loc = {
-    zip: zip,
     city: city,
     state: state,
     country: country,
@@ -35,6 +33,8 @@ export const handleSubmit = async(loc) => {
 
     const coords = await handleGeo(vLoc)
     if (coords) {
+      const note = document.getElementById('note')
+      note.classList.remove('invisible')
       const weather = await handleWb(coords, range)
       await Client.processWeather(weather, range);
       await handlePix()
@@ -60,10 +60,8 @@ const handleGeo = async(loc) => {
     const data = await response.json()
     if (data === false) {
       alert('So sorry! Your location did not return any results.  Please verify your entries or try a neighboring city');
-      return data
     }
     console.log('handleGeo Data: ', data)
-    Client.addData(data)
     return data
   } catch(e) {
     console.log('handleGeo error: ', e);

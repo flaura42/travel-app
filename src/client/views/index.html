@@ -13,14 +13,11 @@
       <section id="form-section">
         <h2>Travel Plans</h2>
         <form id="form">
-          <p class="instructions">Please enter either a postal code or location details</p>
-          <label for="zip" class="far-left row-3 end">Postal Code:</label>
-          <input type="text" id="zip" name="zip" class="box left row-3">
-          <p class="or middle-right row-3">OR</p>
-          <label for="city" class="right end">City:</label>
-          <input type="text" id="city" name="city" class="box far-right">
-          <label for="state" class="right end">State:</label>
-          <input type="text" id="state" name="state" class="box far-right">
+          <p class="instructions">Please enter travel plan details:</p>
+          <label for="city" class="far-left end">City:</label>
+          <input type="text" id="city" name="city" class="box left">
+          <label for="state" class="middle end">State:</label>
+          <input type="text" id="state" name="state" class="box middle-left">
           <label for="country" class="right end">Country:</label>
           <select id="country" class="box far-right" name="country">
             <option value="" disabled selected hidden>Choose one:</option>
@@ -31,6 +28,7 @@
           <input type="text" id="end-date" name="end-date" class="box middle-right margin-top" placeholder="mm/dd/yyyy">
           <button id="submit-form" class="box far-right margin-top" type="submit">Submit Form</button>
         </form>
+        <p id="note" class="invisible">Processing Data...</p>
       </section>
       <section id="results-section" class="invisible"></section>
     </main>

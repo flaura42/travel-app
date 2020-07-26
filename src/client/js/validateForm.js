@@ -1,45 +1,40 @@
-export function validateDest(loc) {
-  let zip
-  if (loc.zip) { zip = validateZip(loc.zip) } else { zip = '' }
-  const city = validateLoc(loc.city);
-  const state = validateLoc(loc.state);
-  const country = loc.country;
+export const validateDest = async(loc) => {
+  try {
+    let city = validateLoc(loc.city);
+    let state = validateLoc(loc.state);
+    let country = loc.country;
 
-  console.log(`results: Zip: ${zip}, City: ${city}, State: ${state}, Country: ${country}`)
+    console.log(`results: City: ${city}, State: ${state}, Country: ${country}`)
 
-  if (!zip && !city && !state && !country) {
-    alert('No destination received. Please enter a postal code or location details.')
-    return false;
-  }
-  if (zip && city || zip && state || zip && city || zip && country) {
-    alert('Please enter either a postal code OR location details.')
-    cityI.value = '';
-    stateI.value = '';
-    countryI.value = '';
-    return false;
-  }
-  if (!city && !state && !country) {
-    return `postalcode=${zip}`
-  }
-  if (!state && !country) {
-    const conf = confirm('Entering only a city may result in a different city being shown. Proceed?')
-    return (conf ? `placename=${city}` : false)
-  }
-  if (!city) {
-    return `placename=${state}&country=${country}`
-  }
-  if (!state) {
-    return `placename=${city}&country=${country}`
-  }
-  else {
-    return `placename=${city}+${state}&country=${country}`
-  }
-}
+    if (!city && !state && !country) {
+      alert('No destination received. Please enter a postal code or location details.')
+      return false;
+    }
 
-const validateZip = (zip) => {
-  const regex = /^\d{1,5}$/;
-  if (regex.test(zip)) { return zip }
-  else { alert('Please enter a 5 digit postal code.') }
+    if (!state && !country) {
+      const conf = confirm('Entering only a city may result in a different city being shown. Proceed?')
+      return (conf ? `name=${city}` : false)
+    }
+
+    if (state.length === 2) {
+      const states = await Client.getStates()
+      state = Object.getOwnPropertyDescriptor(states, state).value
+    }
+
+    let space = ''
+    let cityp
+    let statep
+    let countryp
+    city ? cityp = `&name=${city}` : cityp = ''
+    state ? statep = `&adminName1=${state}` : statep = ''
+    country ? countryp = `&country=${country}` : countryp = ''
+
+    let dest = space.concat(cityp, statep, countryp)
+    console.log('destination', dest)
+    return dest
+  } catch(e) {
+    console.log('validateDest error', e)
+  }
 }
 
 const validateLoc = (loc) => { return encodeURIComponent(loc) }

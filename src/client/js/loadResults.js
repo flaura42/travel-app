@@ -85,8 +85,9 @@ export const loadResults = async() => {
 
     for (let i=0; i<data.weather.length; i++) {
       let fDiv = document.createElement('div')
-      fDiv.className = 'forecast-div'
-
+      if (data.weather.length === 1) { fDiv.className = 'historical-div' }
+      else { fDiv.className = 'forecast-div' }
+    
       let dp = document.createElement('p')
       dp.className = 'fdate-p'
       dp.innerHTML = `<span class="bold">${data.weather[i].date}</span>`
@@ -133,6 +134,9 @@ export const loadResults = async() => {
     section.append(div)
 
     // Keep at end
+    const note = document.getElementById('note')
+    note.classList.add('invisible')
+
     section.classList.remove('invisible')
   } catch(e) {
     console.log('loadResults error: ', e)
