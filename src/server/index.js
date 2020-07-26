@@ -26,10 +26,13 @@ app.get('/', (req, res) => {
     res.send(path.resolve('src/client/views/index.html'))
 })
 
+app.get('/all', (req, res) => { res.send(projectData) })
+
 const countries = require('../client/data/countries.json')
-app.get('/getC', (req, res) => {
-  res.send(countries)
-})
+app.get('/getC', (req, res) => { res.send(countries) })
+
+const states = require('../client/data/states.json')
+app.get('/getS', (req, res) => { res.send(states) })
 
 const projectData = {}
 
@@ -41,10 +44,6 @@ app.post('/add', (req, res) => {
     data: data
   })
   Object.assign(projectData, data)
-})
-
-app.get('/all', (req, res) => {
-  res.send(projectData)
 })
 
 app.post('/geo', async (req, res) => {

@@ -2,131 +2,113 @@ import { getMap } from './map'
 
 export const loadResults = async() => {
   try {
-    const res = await fetch('http://localhost:8000/all', {
-    method: 'GET',
-    mode: 'cors',
-    credentials: 'same-origin',
-    headers: {
-      'Content-Type': 'application/json',
+    const data = await Client.getAll()
+    const section = document.getElementById('results-section')
+
+    const h2 = document.createElement('h2')
+    h2.innerHTML = 'Travel Plan Details'
+    section.append(h2)
+
+    const lDiv = document.createElement('div');
+    lDiv.id = 'location-div'
+    const h3 = document.createElement('h3')
+    h3.className = 'dest-name'
+    h3.innerText = `${data.city}, ${data.state}, ${data.country}`
+    lDiv.append(h3)
+
+    const tp = document.createElement('p')
+    tp.className = 'timezone'
+    tp.innerHTML = `<span class="bold">Timezone:</span> ${data.timezone}`
+    lDiv.append(tp)
+
+    const mapDiv = document.createElement('div')
+    mapDiv.id = 'map-div'
+    lDiv.append(mapDiv)
+
+    const pix = document.createElement('div')
+    pix.id = 'pix-div'
+    if (data.pixUrl === 'b798cf65cc50b33b79005263c54b32fd.jpg') {
+      const pixp = document.createElement('p')
+      pixp.innerHTML = 'Sorry, no picture available.  Here is one of a beach!'
+      pix.append(pixp)
     }
-  })
-  const data = await res.json();
-  console.log('Data to fill: ', data)
-  fillPage(data)
+    const img = document.createElement('img')
+    img.id = 'pix-img'
+    img.src = data.pixUrl
+
+    pix.append(img)
+    lDiv.append(pix)
+    section.append(lDiv)
+
+    const coords = { lat: data.lat, long: data.long }
+    Client.getMap(coords)
+
+
+    const div = document.createElement('div')
+    div.id = 'results-div'
+
+    const wDiv = document.createElement('div');
+    wDiv.id = 'weather-div'
+    const h4 = document.createElement('h4')
+    if (data.weather.length === 1) {
+      h4.innerText = 'Historical Weather (Travel dates outside forecast range)'
+    } else {
+      h4.innerText = 'Weather Forecast'
+    }
+    wDiv.append(h4)
+
+    for (let i=0; i<data.weather.length; i++) {
+      let fDiv = document.createElement('div')
+      fDiv.className = 'forecast-div'
+
+      let dp = document.createElement('p')
+      dp.className = 'fdate-p'
+      dp.innerHTML = `<span class="bold">${data.weather[i].date}</span>`
+      fDiv.append(dp)
+
+      let maxp = document.createElement('p')
+      maxp.className = 'max-p'
+      maxp.innerHTML = `<span class="bold">High:</span> ${data.weather[i].high}&#8457`
+      fDiv.append(maxp)
+
+      let minp = document.createElement('p')
+      minp.className = 'min-p'
+      minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].low}&#8457`
+      fDiv.append(minp)
+
+      // Rain change not available for historical weather
+      if (data.weather[i].pop >= 0) {
+        let popp = document.createElement('p')
+        popp.className = 'pop-p'
+        popp.innerHTML = `<span class="bold">Precipitation:</span> ${data.weather[i].pop}%`
+        fDiv.append(popp)
+      }
+
+      let humip = document.createElement('p')
+      humip.className = 'humi-p'
+      humip.innerHTML = `<span class="bold">Humidity:</span> ${data.weather[i].humid}%`
+      fDiv.append(humip)
+
+      let windp = document.createElement('p')
+      windp.className = 'humi-p'
+      windp.innerHTML = `<span class="bold">Wind:</span> ${data.weather[i].wind} mph`
+      fDiv.append(windp)
+
+      // Icon not available for historical weather
+      if (data.weather[i].icon) {
+        let icon = document.createElement('img')
+        icon.className = 'w-icon'
+        icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].icon}.png`
+        fDiv.append(icon)
+      }
+      wDiv.append(fDiv)
+      div.append(wDiv)
+    }
+    section.append(div)
+
+    // Keep at end
+    section.classList.remove('invisible')
   } catch(e) {
     console.log('loadResults error: ', e)
   }
-}
-
-const fillPage = (data) => {
-  const section = document.getElementById('results-section')
-
-  const h2 = document.createElement('h2')
-  h2.innerHTML = 'Travel Plan Details'
-  section.append(h2)
-
-  const lDiv = document.createElement('div');
-  lDiv.id = 'location-div'
-  const h3 = document.createElement('h3')
-  h3.className = 'dest-name'
-  h3.innerText = `${data.city}, ${data.state}, ${data.country}`
-  lDiv.append(h3)
-
-  const tp = document.createElement('p')
-  tp.className = 'timezone'
-  tp.innerHTML = `<span class="bold">Timezone:</span> ${data.timezone}`
-  lDiv.append(tp)
-
-  const mapDiv = document.createElement('div')
-  mapDiv.id = 'map-div'
-  lDiv.append(mapDiv)
-
-  const pix = document.createElement('div')
-  pix.id = 'pix-div'
-  if (data.pixUrl === 'b798cf65cc50b33b79005263c54b32fd.jpg') {
-    const pixp = document.createElement('p')
-    pixp.innerHTML = 'Sorry, no picture available.  Here is one of a beach!'
-    pix.append(pixp)
-  }
-  const img = document.createElement('img')
-  img.id = 'pix-img'
-  img.src = data.pixUrl
-
-  pix.append(img)
-  lDiv.append(pix)
-  section.append(lDiv)
-
-  const coords = { lat: data.lat, long: data.long }
-  Client.getMap(coords)
-
-
-  const div = document.createElement('div')
-  div.id = 'results-div'
-
-  const wDiv = document.createElement('div');
-  wDiv.id = 'weather-div'
-  const h4 = document.createElement('h4')
-  if (data.weather.length === 1) {
-    h4.innerText = 'Historical Weather (Travel dates outside forecast range)'
-  } else {
-    h4.innerText = 'Weather Forecast'
-  }
-  wDiv.append(h4)
-
-  for (let i=0; i<data.weather.length; i++) {
-    let fDiv = document.createElement('div')
-    fDiv.className = 'forecast-div'
-
-    let dp = document.createElement('p')
-    dp.className = 'fdate-p'
-    dp.innerHTML = `<span class="bold">${data.weather[i].date}</span>`
-    fDiv.append(dp)
-
-    let maxp = document.createElement('p')
-    maxp.className = 'max-p'
-    maxp.innerHTML = `<span class="bold">High:</span> ${data.weather[i].high}&#8457`
-    fDiv.append(maxp)
-
-    let minp = document.createElement('p')
-    minp.className = 'min-p'
-    minp.innerHTML = `<span class="bold">Low:</span> ${data.weather[i].low}&#8457`
-    fDiv.append(minp)
-
-    // Rain change not available for historical weather
-    if (data.weather[i].pop >= 0) {
-      let popp = document.createElement('p')
-      popp.className = 'pop-p'
-      popp.innerHTML = `<span class="bold">Precipitation:</span> ${data.weather[i].pop}%`
-      fDiv.append(popp)
-    }
-
-    let humip = document.createElement('p')
-    humip.className = 'humi-p'
-    humip.innerHTML = `<span class="bold">Humidity:</span> ${data.weather[i].humid}%`
-    fDiv.append(humip)
-
-    let windp = document.createElement('p')
-    windp.className = 'humi-p'
-    windp.innerHTML = `<span class="bold">Wind:</span> ${data.weather[i].wind} mph`
-    fDiv.append(windp)
-
-    // Icon not available for historical weather
-    if (data.weather[i].icon) {
-      let icon = document.createElement('img')
-      icon.className = 'w-icon'
-      icon.src = `https://www.weatherbit.io/static/img/icons/${data.weather[i].icon}.png`
-      fDiv.append(icon)
-    }
-    wDiv.append(fDiv)
-    div.append(wDiv)
-  }
-  section.append(div)
-
-
-
-
-
-  // Keep at end
-
-  section.classList.remove('invisible')
 }

@@ -1,6 +1,6 @@
 export const addCountries = async() => {
   try {
-    const countries = await getCountries()
+    const countries = await Client.getCountries()
     const country = document.getElementById('country');
     const number = Object.keys(countries).length;
     const select = document.getElementById('country')
@@ -13,22 +13,5 @@ export const addCountries = async() => {
     }
   } catch(e) {
     console.log('Error with addCountries: ', e);
-  }
-}
-
-const getCountries = async() => {
-  try {
-    const res = await fetch('http://localhost:8000/getC', {
-      method: 'GET',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    const response = await res.json()
-    return response
-  } catch(e) {
-    console.log('getCountries error: ', e)
   }
 }

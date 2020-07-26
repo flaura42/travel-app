@@ -37,7 +37,7 @@ export const handleSubmit = async(loc) => {
       const weather = await handleWb(coords, range)
       const wCheck = await processWeather(weather, range);
       if (wCheck === true) {
-        const pix = await handlePix(weather)
+        const pix = await handlePix()
         Client.loadResults()
       }
     }
@@ -94,10 +94,16 @@ const handleWb = async(coords, range) => {
 }
 
 const processWeather = async(wData, range) => {
+  const states = await Client.getStates()
+  const state = Object.getOwnPropertyDescriptor(states, wData.state_code).value
+
+  const countries = await Client.getCountries()
+  const country = Object.getOwnPropertyDescriptor(countries, wData.country_code).value
+
   const data = {
     city: wData.city_name,
-    state: wData.state_code,
-    country: wData.country_code,
+    state: state,
+    country: country,
     timezone: wData.timezone,  // Local IANA Timezone
     lat: wData.lat,
     long: wData.lon,
@@ -110,7 +116,6 @@ const processWeather = async(wData, range) => {
     let day = vdate.slice(8, 10)
     let year = vdate.slice(0, 4)
     let date = `${month}/${day}/${year}`
-    console.log(date)
     const maxTemp = Math.round(wData.data[0].max_temp)
     const minTemp = Math.round(wData.data[0].min_temp)
     const humid = wData.data[0].rh  // Average relative humidity %
@@ -135,7 +140,6 @@ const processWeather = async(wData, range) => {
       let day = vdate.slice(8, 10)
       let year = vdate.slice(0, 4)
       let date = `${month}/${day}/${year}`
-      console.log(date)
       const maxTemp = Math.round(wData.data[i].max_temp)
       const minTemp = Math.round(wData.data[i].min_temp)
       const pop = wData.data[i].pop // Probability of Precipitation %
@@ -173,11 +177,12 @@ const processWeather = async(wData, range) => {
 }
 
 
-const handlePix = async(d) => {
+const handlePix = async() => {
+  const d = await Client.getAll()
   const dest = {
-    city: d.city_name,
-    state: d.state_code,
-    country: d.country_code
+    city: d.city,
+    state: d.state,
+    country: d.country
   }
   const response = await fetch('http://localhost:8000/pix', {
     method: 'POST',

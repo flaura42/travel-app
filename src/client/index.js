@@ -1,6 +1,5 @@
 import { handleSubmit } from './js/formHandler'
-import { validateDest } from './js/validateForm'
-import { validateDates } from './js/validateForm'
+import { validateDest, validateDates } from './js/validateForm'
 import { addCountries } from './js/addCountries'
 import { loadResults } from './js/loadResults'
 import { getDateRange } from './js/getDateRange'
@@ -16,6 +15,58 @@ document.addEventListener('DOMContentLoaded', () => {
   Client.addCountries()
 });
 
+
+const getAll = async() => {
+  try {
+    const res = await fetch('http://localhost:8000/all', {
+    method: 'GET',
+    mode: 'cors',
+    credentials: 'same-origin',
+    headers: {
+      'Content-Type': 'application/json',
+    }
+  })
+  const data = await res.json();
+  return data
+  } catch(e) {
+    console.log('getAll error: ', e)
+  }
+}
+
+const getCountries = async() => {
+  try {
+    const res = await fetch('http://localhost:8000/getC', {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const response = await res.json()
+    return response
+  } catch(e) {
+    console.log('getCountries error: ', e)
+  }
+}
+
+const getStates = async() => {
+  try {
+    const res = await fetch('http://localhost:8000/getS', {
+      method: 'GET',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    const response = await res.json()
+    return response
+  } catch(e) {
+    console.log('getStates error: ', e)
+  }
+}
+
 export {
   handleSubmit,
   validateDest,
@@ -23,5 +74,8 @@ export {
   getDateRange,
   getMap,
   addCountries,
+  getAll,
+  getCountries,
+  getStates,
   loadResults
 }
