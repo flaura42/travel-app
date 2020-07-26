@@ -15,6 +15,6 @@ document.head.appendChild(script);
 export const getMap = (coords) => {
   let map = new google.maps.Map(document.getElementById('map-div'), {
     center: {lat: coords.lat, lng: coords.long},
-    zoom: 12
+    zoom: 8
   })
 }

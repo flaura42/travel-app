@@ -85,9 +85,13 @@ export const loadResults = async() => {
 
     for (let i=0; i<data.weather.length; i++) {
       let fDiv = document.createElement('div')
-      if (data.weather.length === 1) { fDiv.className = 'historical-div' }
-      else { fDiv.className = 'forecast-div' }
-    
+      if (data.weather.length === 1) {
+        fDiv.className = 'historical-div weather-div'
+      }
+      else {
+        fDiv.className = 'forecast-div weather-div'
+      }
+
       let dp = document.createElement('p')
       dp.className = 'fdate-p'
       dp.innerHTML = `<span class="bold">${data.weather[i].date}</span>`

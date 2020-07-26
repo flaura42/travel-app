@@ -12,21 +12,33 @@
     <main>
       <section id="form-section">
         <h2>Travel Plans</h2>
+        <p class="instructions">Please enter travel plan information:</p>
         <form id="form">
-          <p class="instructions">Please enter travel plan details:</p>
-          <label for="city" class="far-left end">City:</label>
-          <input type="text" id="city" name="city" class="box left">
-          <label for="state" class="middle end">State:</label>
-          <input type="text" id="state" name="state" class="box middle-left">
-          <label for="country" class="right end">Country:</label>
-          <select id="country" class="box far-right" name="country">
-            <option value="" disabled selected hidden>Choose one:</option>
-          </select>
-          <label for="start-date" class="far-left end margin-top">Departure:</label>
-          <input type="text" id="start-date" name="start-date margin-top" class="box left margin-top" placeholder="mm/dd/yyyy">
-          <label for="end-date" class="middle end margin-top">Return:</label>
-          <input type="text" id="end-date" name="end-date" class="box middle-right margin-top" placeholder="mm/dd/yyyy">
-          <button id="submit-form" class="box far-right margin-top" type="submit">Submit Form</button>
+          <div class='set left'>
+            <label for="city">City:</label>
+            <input type="text" id="city" name="city" class="box">
+          </div>
+          <div class='set middle'>
+            <label for="state">State:</label>
+            <input type="text" id="state" name="state" class="box">
+          </div>
+          <div class='set right'>
+            <label for="country">Country:</label>
+            <select id="country" class="box" name="country">
+              <option value="" disabled selected hidden>Choose one:</option>
+            </select>
+          </div>
+          <div class='set left'>
+            <label for="start-date">Departure:</label>
+            <input type="text" id="start-date" name="start-date" class="box" placeholder="mm/dd/yyyy">
+          </div>
+          <div class='set middle'>
+            <label for="end-date">Return:</label>
+            <input type="text" id="end-date" name="end-date" class="box" placeholder="mm/dd/yyyy">
+          </div>
+          <div class='set right'>
+            <button id="submit-form" class="box" type="submit">Submit Form</button>
+          </div>
         </form>
         <p id="note" class="invisible">Processing Data...</p>
       </section>
