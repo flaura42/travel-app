@@ -152,7 +152,7 @@ const getPix = async (dest) => {
   }
   console.log('image search: ', topic)
 
-  const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${topic}&safesearch=true`
+  const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${topic}&safesearch=true&image_type=photo&category=travel`
   console.log('url: ', url);
   const response = await fetch(url)
   try {
