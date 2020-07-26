@@ -26,6 +26,11 @@ app.get('/', (req, res) => {
     res.send(path.resolve('src/client/views/index.html'))
 })
 
+const countries = require('../client/data/countries.json')
+app.get('/getC', (req, res) => {
+  res.send(countries)
+})
+
 const projectData = {}
 
 app.post('/add', (req, res) => {
@@ -36,11 +41,21 @@ app.post('/add', (req, res) => {
     data: data
   })
   Object.assign(projectData, data)
-  console.log('updated projectData: ', projectData)
 })
 
 app.get('/all', (req, res) => {
   res.send(projectData)
+})
+
+app.post('/geo', async (req, res) => {
+  try {
+    const destination = req.body.destination
+    console.log('Place to search: ', destination)
+    const coords = await getGeo(destination)
+    res.send(coords)
+  } catch(e) {
+    console.log('/geo post error: ', e)
+  }
 })
 
 const getGeo = async (destination) => {
@@ -61,14 +76,17 @@ const getGeo = async (destination) => {
   }
 }
 
-app.post('/geo', async (req, res) => {
+app.post('/wb', async (req, res) => {
   try {
-    const destination = req.body.destination
-    console.log('Place to search: ', destination)
-    const coords = await getGeo(destination)
-    res.send(coords)
+    const lat = req.body.coords.lat
+    const long = req.body.coords.long
+    const start = req.body.range.isos
+    const end = req.body.range.isoe
+    console.log('coords: ', lat, long)
+    const weather = await getWB(lat, long, start, end)
+    res.send(weather)
   } catch(e) {
-    console.log('/geo post error: ', e)
+    console.log('/wb post error: ', e)
   }
 })
 
@@ -91,24 +109,28 @@ const getWB = async (lat, long, start, end) => {
   }
 }
 
-app.post('/wb', async (req, res) => {
+app.post('/pix', async (req, res) => {
   try {
-    const lat = req.body.coords.lat
-    const long = req.body.coords.long
-    const start = req.body.range.isos
-    const end = req.body.range.isoe
-    console.log('coords: ', lat, long)
-    const weather = await getWB(lat, long, start, end)
-    res.send(weather)
+    const images = await getPix(req.body)
+    res.send(images)
   } catch(e) {
-    console.log('/wb post error: ', e)
+    console.log('/pix post error: ', e)
   }
 })
 
-
 const getPix = async (dest) => {
-  const eDest = encodeURIComponent(dest)
-  const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${eDest}&safesearch=true`
+  const city = encodeURIComponent(dest.dest.city)
+  const state = encodeURIComponent(dest.dest.state)
+  const country = encodeURIComponent(dest.dest.country)
+  let topic
+  if (state) {
+    topic = `${city}+${state}`
+  } else {
+    topic = `${city}+${country}`
+  }
+  console.log('image search: ', topic)
+
+  const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${topic}&safesearch=true`
   console.log('url: ', url);
   const response = await fetch(url)
   try {
@@ -123,29 +145,3 @@ const getPix = async (dest) => {
     console.log('getPix error: ', e)
   }
 }
-
-app.post('/pix', async (req, res) => {
-  try {
-    let dest
-    const city = req.body.dest.city
-    const state = req.body.dest.state
-    const country = req.body.dest.country
-    if (!state) {
-      dest = `${city}, ${country}`
-    } else {
-      dest = `${city}, ${state}`
-    }
-    console.log('image search: ', dest)
-    const images = await getPix(dest)
-    if (images) {
-      res.send(images)
-    } else {
-      dest = country
-      const images = await getPix(dest)
-      res.send(images)
-    }
-
-  } catch(e) {
-    console.log('/pix post error: ', e)
-  }
-})
