@@ -13,7 +13,33 @@ export const loadResults = async() => {
     lDiv.id = 'location-div'
     const h3 = document.createElement('h3')
     h3.className = 'dest-name'
-    h3.innerText = `${data.city}, ${data.state}, ${data.country}`
+    // Determine what to enter in dest-name
+    let text = ''
+    let comma = ', '
+    let city = data.city
+    let state = data.state
+    let country = data.country
+    if (data.city && data.state && !data.country) {
+      text = text.concat(city, comma, state)
+    }
+    else if (data.city && !data.state && data.country) {
+      text = text.concat(city, comma, country)
+    }
+    else if (!data.city && data.state && data.country) {
+      text = text.concat(state, comma, country)
+    }
+    else if (data.city && !data.state && !data.country) {
+      text = text.concat(city)
+    }
+    else if (!data.city && data.state && !data.country) {
+      text = text.concat(state)
+    }
+    else if (!data.city && !data.state && data.country) {
+      text = text.concat(country)
+    } else {
+      text = text.concat(city, comma, state, comma, country)
+    }
+    h3.innerText = text
     lDiv.append(h3)
 
     const tp = document.createElement('p')

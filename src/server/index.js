@@ -44,6 +44,7 @@ app.post('/add', (req, res) => {
     data: data
   })
   Object.assign(projectData, data)
+  console.log('Updated projectData: ', projectData)
 })
 
 app.post('/geo', async (req, res) => {

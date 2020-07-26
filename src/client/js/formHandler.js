@@ -1,9 +1,9 @@
 const submitForm = document.getElementById('submit-form');
 submitForm.addEventListener('click', (e) => {
   e.preventDefault()
+
   const section = document.getElementById('results-section')
-  const div = document.getElementById('results-div')
-  if (document.contains(div)) { div.remove() }
+  section.innerHTML=''
 
   const zip = document.getElementById('zip').value;
   const city = document.getElementById('city').value;
@@ -19,12 +19,13 @@ submitForm.addEventListener('click', (e) => {
     start: sDate,
     end: eDate
   }
+  console.log('form data', loc);
+  Client.addData(loc)
   handleSubmit(loc)
 })
 
 export const handleSubmit = async(loc) => {
   try {
-    // Client.loadResults()
     let range = {}
     const valDate = await Client.validateDates(loc.start, loc.end)
     if (!valDate) { return }
@@ -35,13 +36,10 @@ export const handleSubmit = async(loc) => {
     const coords = await handleGeo(vLoc)
     if (coords) {
       const weather = await handleWb(coords, range)
-      const wCheck = await processWeather(weather, range);
-      if (wCheck === true) {
-        const pix = await handlePix()
-        Client.loadResults()
-      }
+      await Client.processWeather(weather, range);
+      await handlePix()
+      Client.loadResults()
     }
-    else { return }
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -65,6 +63,7 @@ const handleGeo = async(loc) => {
       return data
     }
     console.log('handleGeo Data: ', data)
+    Client.addData(data)
     return data
   } catch(e) {
     console.log('handleGeo error: ', e);
@@ -93,90 +92,6 @@ const handleWb = async(coords, range) => {
   }
 }
 
-const processWeather = async(wData, range) => {
-  const states = await Client.getStates()
-  const state = Object.getOwnPropertyDescriptor(states, wData.state_code).value
-
-  const countries = await Client.getCountries()
-  const country = Object.getOwnPropertyDescriptor(countries, wData.country_code).value
-
-  const data = {
-    city: wData.city_name,
-    state: state,
-    country: country,
-    timezone: wData.timezone,  // Local IANA Timezone
-    lat: wData.lat,
-    long: wData.lon,
-    weather: []
-  }
-  if (range.isos) {
-    console.log('historical')
-    let vdate = wData.data[0].datetime
-    let month = vdate.slice(5, 7)
-    let day = vdate.slice(8, 10)
-    let year = vdate.slice(0, 4)
-    let date = `${month}/${day}/${year}`
-    const maxTemp = Math.round(wData.data[0].max_temp)
-    const minTemp = Math.round(wData.data[0].min_temp)
-    const humid = wData.data[0].rh  // Average relative humidity %
-    const wind = wData.data[0].wind_spd  // wind speed m/s
-    const wh = {
-      date: date,
-      high: maxTemp,
-      low: minTemp,
-      humid: humid,
-      wind: wind,
-    }
-    data.weather.push(wh)
-  } else {
-    console.log('forecast')
-    let s = 0
-    for (let i=range.sOffset; i<=range.eOffset; i++) {
-      s++
-      if (s > 5) { break }
-      if (i > 15) { break }
-      let vdate = wData.data[i].valid_date
-      let month = vdate.slice(5, 7)
-      let day = vdate.slice(8, 10)
-      let year = vdate.slice(0, 4)
-      let date = `${month}/${day}/${year}`
-      const maxTemp = Math.round(wData.data[i].max_temp)
-      const minTemp = Math.round(wData.data[i].min_temp)
-      const pop = wData.data[i].pop // Probability of Precipitation %
-      const humid = wData.data[i].rh  // Average relative humidity %
-      const wind = wData.data[i].wind_spd  // wind speed m/s
-      const icon = wData.data[i].weather.icon.replace('n', 'd')
-      const wf = {
-        date: date,
-        high: maxTemp,
-        low: minTemp,
-        pop: pop,
-        humid: humid,
-        wind: wind,
-        icon: icon
-      }
-      data.weather.push(wf)
-      console.log(wf)
-    }
-  }
-  try {
-    const res = await fetch('http://localhost:8000/add', {
-      method: 'POST',
-      mode: 'cors',
-      credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-    const response = await res.json()
-    return true;
-  } catch(e) {
-    console.log('processWeather error: ', e)
-  }
-}
-
-
 const handlePix = async() => {
   const d = await Client.getAll()
   const dest = {
@@ -197,7 +112,6 @@ const handlePix = async() => {
   try {
     let pixUrl
     const data = await response.json()
-    console.log(data)
     if (!data) {
       pixUrl = 'b798cf65cc50b33b79005263c54b32fd.jpg'
       console.log('no images!')
