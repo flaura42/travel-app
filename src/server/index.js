@@ -58,7 +58,7 @@ app.post('/geo', async (req, res) => {
     const coords = await getGeo(req.body.destination)
     res.send(coords)
   } catch(e) {
-    console.log('/geo post error: ', e)
+    console.error('/geo post error: ', e)
   }
 })
 
@@ -72,11 +72,11 @@ const getGeo = async (destination) => {
       const lat = data.geonames[0].lat
       const long = data.geonames[0].lng
       console.log('from geo: ', data.geonames[0])
-      return { lat: lat, long: long }  
+      return { lat: lat, long: long }
     }
     else { return new Boolean(false) }
   } catch(e) {
-    console.log('getGeo error: ', e)
+    console.error('getGeo error: ', e)
   }
 }
 
@@ -85,7 +85,7 @@ app.post('/wb', async (req, res) => {
     const weather = await getWB(req.body)
     res.send(weather)
   } catch(e) {
-    console.log('/wb post error: ', e)
+    console.error('/wb post error: ', e)
   }
 })
 
@@ -108,7 +108,7 @@ const getWB = async (data) => {
     const data = await response.json()
     return data
   } catch(e) {
-    console.log('getWB error: ', e)
+    console.error('getWB error: ', e)
   }
 }
 
@@ -117,7 +117,7 @@ app.post('/pix', async (req, res) => {
     const images = await getPix(req.body)
     res.send(images)
   } catch(e) {
-    console.log('/pix post error: ', e)
+    console.error('/pix post error: ', e)
   }
 })
 
@@ -143,6 +143,6 @@ const getPix = async (dest) => {
     }
     else { return new Boolean(false) }
   } catch(e) {
-    console.log('getPix error: ', e)
+    console.error('getPix error: ', e)
   }
 }
