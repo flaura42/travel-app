@@ -1,6 +1,6 @@
 import { handleSubmit } from './js/formHandler'
-import { addData, checkData, processWeather } from './js/handleData'
-import { validateDest, validateDates } from './js/validateForm'
+import { addData, removeData, checkData, processWeather } from './js/handleData'
+import { validateForm } from './js/validateForm'
 import { addCountries } from './js/addCountries'
 import { loadResults } from './js/loadResults'
 import { getDateRange } from './js/getDateRange'
@@ -71,10 +71,10 @@ const getStates = async() => {
 export {
   handleSubmit,
   addData,
+  removeData,
   checkData,
   processWeather,
-  validateDest,
-  validateDates,
+  validateForm,
   getDateRange,
   getMap,
   addCountries,

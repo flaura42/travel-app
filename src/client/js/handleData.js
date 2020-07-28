@@ -5,9 +5,7 @@ export const addData = async(data) => {
       method: 'POST',
       mode: 'cors',
       credentials: 'same-origin',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
     const response = await res.json()
@@ -16,36 +14,120 @@ export const addData = async(data) => {
   }
 }
 
-export const checkData = async() => {
+export const removeData = async() => {
+  let data = ''
   try {
-    const data = await Client.getAll()
-    let state
-    let country
-    if (data.state.length === 2) {
-      const states = await Client.getStates()
-      state = Object.getOwnPropertyDescriptor(states, data.state).value
+    console.log('clearing data, i think')
+    return fetch('http://localhost:8000/remove', {
+      method: 'DELETE',
+      mode: 'cors',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    const response = await res.json()
+  } catch(e) {
+    console.log('removeData error: ', e)
+  }
+}
+
+
+// TODO: Try to make less convoluted
+export const checkData = async(newData) => {
+  try {
+    console.log('checking data')
+    let data
+    let savedData = await Client.getAll()
+    if (savedData) {
+      data =  {
+        ...savedData,
+        ...newData
+      }
     } else {
+      data = newData
+    }
+
+    let state
+    let stateID
+    let country
+    let countryID
+
+    const states = await Client.getStates()
+    if (data.state === null || data.state === undefined) {
+      state = ''
+    }
+    if (data.state && data.state.length === 2) {
+      let stateD = data.state.toUpperCase()
+      state = Object.getOwnPropertyDescriptor(states, stateD).value
+    }
+    if (data.stateID && !state) {
+      state = Object.getOwnPropertyDescriptor(states, data.stateID).value
+    }
+    if (data.state) {
       state = data.state
     }
-    if (data.country.length === 2) {
-      const countries = await Client.getCountries()
+
+    if (data.stateID === null || data.stateID === undefined) {
+      console.log('should not be getting stateID from null/und: ')
+      stateID = ''
+    }
+    if (data.stateID) {
+      console.log('should not be getting stateID, has id: ')
+      stateID = data.stateID
+    }
+    if (!data.stateID && state) {
+      stateID = Object.getOwnPropertyDescriptor(states, state)
+      console.log('should be getting stateID: ')
+    }
+
+    const countries = await Client.getCountries()
+    if (data.country === null || data.country === undefined) {
+      country = ''
+    }
+    if (data.country && data.country.length === 2) {
       country = Object.getOwnPropertyDescriptor(countries, data.country).value
-    } else {
+    }
+    if (data.countryID && !country) {
+      country = Object.getOwnPropertyDescriptor(countries, data.countryID).value
+    }
+    if (data.country) {
       country = data.country
     }
-    const newData = {
-      state: state,
-      country: country
+
+    if (data.countryID === null || data.countryID === undefined) {
+      countryID = ''
     }
-    addData(newData)
+    if (!data.countryID && country) {
+      countryID = Object.getOwnPropertyDescriptor(countries, country)
+    }
+    if (data.countryID) {
+      countryID = data.countryID
+    }
+
+    data = {
+      city: data.city,
+      state: state,
+      stateID: stateID,
+      country: country,
+      countryID: countryID
+    }
+    addData(data)
+    return data
   } catch(e) {
     console.log('checkData error', e)
   }
 }
 
 export const processWeather = (wData, range) => {
+  let tzone = wData.timezone
+  let timez = tzone.replace('_', ' ')
+  let timezone = timez.replace('/', ' / ')
   const data = {
-    timezone: wData.timezone,  // Local IANA Timezone
+    city: wData.city_name,
+    stateID: wData.state_code,
+    countryID: wData.country_code,
+  }
+  const newData = {
+    timezone: timezone,  // Local IANA Timezone
     lat: wData.lat,
     long: wData.lon,
     weather: []
@@ -68,7 +150,7 @@ export const processWeather = (wData, range) => {
       humid: humid,
       wind: wind,
     }
-    data.weather.push(wh)
+    newData.weather.push(wh)
   // forecast weather
   } else {
     let s = 0
@@ -97,9 +179,9 @@ export const processWeather = (wData, range) => {
         wind: wind,
         icon: icon
       }
-      data.weather.push(wf)
+      newData.weather.push(wf)
     }
   }
-  addData(data)
-  checkData()
+  checkData(data)
+  addData(newData)
 }

@@ -34,7 +34,7 @@ app.get('/getC', (req, res) => { res.send(countries) })
 const states = require('../client/data/states.json')
 app.get('/getS', (req, res) => { res.send(states) })
 
-const projectData = {}
+let projectData = {}
 
 app.post('/add', (req, res) => {
   const data = req.body
@@ -44,13 +44,18 @@ app.post('/add', (req, res) => {
     data: data
   })
   Object.assign(projectData, data)
+  console.log('new projectData: ', projectData)
+})
+
+app.delete('/remove', (req, res) => {
+  projectData = {}
+  console.log('removing')
+  console.log('new project data: ', projectData)
 })
 
 app.post('/geo', async (req, res) => {
   try {
-    const destination = req.body.destination
-    console.log('Place to search: ', destination)
-    const coords = await getGeo(destination)
+    const coords = await getGeo(req.body.destination)
     res.send(coords)
   } catch(e) {
     console.log('/geo post error: ', e)
@@ -59,19 +64,14 @@ app.post('/geo', async (req, res) => {
 
 const getGeo = async (destination) => {
   const url = `http://api.geonames.org/searchJSON?username=${process.env.GEO_ID}${destination}`
-  console.log('url: ', url);
-  const response = await fetch(url)
+  console.log('getGeo url: ', url);
   try {
+    const response = await fetch(url)
     const data = await response.json()
     if (data.geonames.length !== 0) {
       const lat = data.geonames[0].lat
       const long = data.geonames[0].lng
-      console.log('from getGeo: ', data.geonames[0]);
-      console.log('from getGeo: ', lat, long);
-      return {
-        lat: lat,
-        long: long
-      }
+      return { lat: lat, long: long }
     }
     else { return new Boolean(false) }
   } catch(e) {
@@ -79,33 +79,9 @@ const getGeo = async (destination) => {
   }
 }
 
-// const getGeo = async (destination) => {
-//   const url = `http://api.geonames.org/postalCodeSearchJSON?${destination}&maxRows=10&username=${process.env.GEO_ID}`
-//   console.log('url: ', url);
-//   const response = await fetch(url)
-//   try {
-//     const data = await response.json()
-//     if (data.postalCodes.length !== 0) {
-//       // const lat = data.postalCodes[0].lat
-//       // const long = data.postalCodes[0].lng
-//       console.log('from getGeo: ', data.postalCodes);
-//       // console.log('from getGeo: ', lat, long);
-//       return data.postalCodes
-//     }
-//     else { return new Boolean(false) }
-//   } catch(e) {
-//     console.log('getGeo error: ', e)
-//   }
-// }
-
 app.post('/wb', async (req, res) => {
   try {
-    const lat = req.body.coords.lat
-    const long = req.body.coords.long
-    const start = req.body.range.isos
-    const end = req.body.range.isoe
-    console.log('coords: ', lat, long)
-    const weather = await getWB(lat, long, start, end)
+    const weather = await getWB(req.body)
     res.send(weather)
   } catch(e) {
     console.log('/wb post error: ', e)
@@ -113,17 +89,21 @@ app.post('/wb', async (req, res) => {
 })
 
 // get historical or forecast weather depending on date range
-const getWB = async (lat, long, start, end) => {
+const getWB = async (data) => {
+  const lat = data.coords.lat
+  const long = data.coords.long
+  const start = data.range.isos
+  const end = data.range.isoe
   let url =''
   if (start) {
     url = `http://api.weatherbit.io/v2.0/history/daily?units=I&lat=${lat}&lon=${long}&start_date=${start}&end_date=${end}&key=${process.env.WB_KEY}`
-    console.log('url: ', url);
   } else {
     url = `http://api.weatherbit.io/v2.0/forecast/daily?units=I&lat=${lat}&lon=${long}&key=${process.env.WB_KEY}`
-    console.log('url: ', url);
+
   }
-  const response = await fetch(url)
+  console.log('getWB url: ', url);
   try {
+    const response = await fetch(url)
     const data = await response.json()
     return data
   } catch(e) {
@@ -150,10 +130,8 @@ const getPix = async (dest) => {
   } else {
     topic = `${city}+${country}`
   }
-  console.log('image search: ', topic)
-
   const url = `https://pixabay.com/api/?key=${process.env.PIX_KEY}&q=${topic}&safesearch=true&image_type=photo&category=travel`
-  console.log('url: ', url);
+  console.log('getPix url: ', url);
   const response = await fetch(url)
   try {
     const data = await response.json()
