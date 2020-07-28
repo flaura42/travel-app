@@ -15,8 +15,8 @@ submitForm.addEventListener('click', (e) => {
   const data = {
     city: city,
     state: state,
-    countryID: countryID,
     country: country,
+    countryID: countryID,
     start: sDate,
     end: eDate
   }
@@ -29,19 +29,33 @@ export const handleSubmit = async(data) => {
     const vData = await Client.validateForm(data)
     if (vData === false) { return }
     else { Client.removeData() }
+
     const cData = await Client.checkData(data)
-    let range = Client.getDateRange(data.start, data.end)
-    const coords = await handleGeo(cData)
-    console.log('Coords: ', coords)
-    if (coords) {
-      const note = document.getElementById('note')
-      note.classList.remove('invisible')
-      const weather = await handleWb(coords, range)
-      await Client.processWeather(weather, range)
-      await handlePix(cData)
-      Client.loadResults()
+    if (!cData) {
+      console.log('no data')
+      return
     }
-    // Client.loadResults()
+    let range = await Client.getDateRange(data.start, data.end)
+    const coords = await handleGeo(cData)
+    if (!coords) {
+      console.log('no coords')
+      return
+    }
+    const note = document.getElementById('note')
+    note.classList.remove('invisible')
+    const weather = await handleWb(coords, range)
+    const wCheck = await Client.processWeather(weather, range)
+
+    if (!wCheck) {
+      console.log('bad weather')
+      return
+    }
+    const pCheck =  await handlePix()
+    if (!pCheck) {
+      console.log('bad pix')
+      return
+    }
+    Client.loadResults()
   } catch(e) {
     console.log('handleSubmit error: ', e);
   }
@@ -91,7 +105,8 @@ const handleWb = async(coords, range) => {
   }
 }
 
-const handlePix = async(data) => {
+const handlePix = async() => {
+  let data = await Client.getAll()
   const dest = {
     city: data.city,
     state: data.state,
@@ -105,25 +120,12 @@ const handlePix = async(data) => {
       body: JSON.stringify({ dest: dest })
     })
     const pixData = await response.json()
-    console.log('pix returned: ', pixData[0].webformatURL)
-    if (pixData) { processPix(pixData[0].webformatURL) }
+    if (pixData) {
+      const pCheck = await Client.addData({pixUrl: pixData[0].webformatURL})
+      return pCheck
+    }
+    else { return true }
   } catch(e) {
     console.log('handlePix error: ', e);
-  }
-}
-
-const processPix = async(pix) => {
-  try {
-    const data = { pixUrl: pix }
-    console.log('adding pix: ', data)
-    const res = await fetch('http://localhost:8000/add', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    })
-    const response = await res.json()
-  } catch(e) {
-    console.log('processPix error: ', e)
   }
 }

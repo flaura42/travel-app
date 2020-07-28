@@ -71,7 +71,8 @@ const getGeo = async (destination) => {
     if (data.geonames.length !== 0) {
       const lat = data.geonames[0].lat
       const long = data.geonames[0].lng
-      return { lat: lat, long: long }
+      console.log('from geo: ', data.geonames[0])
+      return { lat: lat, long: long }  
     }
     else { return new Boolean(false) }
   } catch(e) {

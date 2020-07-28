@@ -1,14 +1,14 @@
 export const addData = async(data) => {
   try {
-    console.log('Adding data: ', data)
     const res = await fetch('http://localhost:8000/add', {
       method: 'POST',
-      mode: 'cors',
       credentials: 'same-origin',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     })
     const response = await res.json()
+    if (response.success) { return true }
+    else { return false }
   } catch(e) {
     console.log('addData error: ', e)
   }
@@ -17,7 +17,6 @@ export const addData = async(data) => {
 export const removeData = async() => {
   let data = ''
   try {
-    console.log('clearing data, i think')
     return fetch('http://localhost:8000/remove', {
       method: 'DELETE',
       mode: 'cors',
@@ -25,83 +24,66 @@ export const removeData = async() => {
       headers: { 'Content-Type': 'application/json' }
     })
     const response = await res.json()
+    if (response.success) { return true }
+    else { return false }
   } catch(e) {
     console.log('removeData error: ', e)
   }
 }
 
-
-// TODO: Try to make less convoluted
 export const checkData = async(newData) => {
   try {
-    console.log('checking data')
     let data
     let savedData = await Client.getAll()
-    if (savedData) {
-      data =  {
-        ...savedData,
-        ...newData
-      }
-    } else {
-      data = newData
-    }
+    if (savedData) { data =  { ...savedData, ...newData } }
+    else { data = newData }
 
+    // fill in values if possible, or empty them if not
     let state
     let stateID
     let country
     let countryID
-
+    console.log('data before fuckin: ', data)
     const states = await Client.getStates()
-    if (data.state === null || data.state === undefined) {
+    if (!data.state || data.state === null || data.state === undefined) {
       state = ''
     }
     if (data.state && data.state.length === 2) {
       let stateD = data.state.toUpperCase()
       state = Object.getOwnPropertyDescriptor(states, stateD).value
     }
-    if (data.stateID && !state) {
+    else if (data.stateID && !state) {
       state = Object.getOwnPropertyDescriptor(states, data.stateID).value
     }
-    if (data.state) {
-      state = data.state
-    }
+    else if (data.state) { state = data.state }
 
-    if (data.stateID === null || data.stateID === undefined) {
-      console.log('should not be getting stateID from null/und: ')
+    if (!data.stateID || data.stateID === null || data.stateID === undefined) {
       stateID = ''
     }
-    if (data.stateID) {
-      console.log('should not be getting stateID, has id: ')
-      stateID = data.stateID
-    }
-    if (!data.stateID && state) {
-      stateID = Object.getOwnPropertyDescriptor(states, state)
-      console.log('should be getting stateID: ')
+    if (data.stateID) { stateID = data.stateID }
+    else if (!data.stateID && state) {
+      stateID = Object.keys(states).find(key => states[key] === state)
     }
 
     const countries = await Client.getCountries()
-    if (data.country === null || data.country === undefined) {
+    if (!data.country || data.country === null || data.country === undefined) {
       country = ''
     }
     if (data.country && data.country.length === 2) {
       country = Object.getOwnPropertyDescriptor(countries, data.country).value
     }
-    if (data.countryID && !country) {
+    else if (data.countryID && !country) {
       country = Object.getOwnPropertyDescriptor(countries, data.countryID).value
     }
-    if (data.country) {
-      country = data.country
-    }
+    else if (data.country) { country = data.country }
 
-    if (data.countryID === null || data.countryID === undefined) {
+    if (!data.countryID || data.countryID === null || data.countryID === undefined) {
       countryID = ''
     }
     if (!data.countryID && country) {
-      countryID = Object.getOwnPropertyDescriptor(countries, country)
+      countryID = Object.keys(countries).find(key => countries[key] === country)
     }
-    if (data.countryID) {
-      countryID = data.countryID
-    }
+    else if (data.countryID) { countryID = data.countryID }
 
     data = {
       city: data.city,
@@ -110,8 +92,10 @@ export const checkData = async(newData) => {
       country: country,
       countryID: countryID
     }
-    addData(data)
-    return data
+
+    const status = await addData(data)
+    if (status) { return data }
+    else { return false }
   } catch(e) {
     console.log('checkData error', e)
   }
@@ -126,6 +110,8 @@ export const processWeather = (wData, range) => {
     stateID: wData.state_code,
     countryID: wData.country_code,
   }
+  checkData(data)
+
   const newData = {
     timezone: timezone,  // Local IANA Timezone
     lat: wData.lat,
@@ -182,6 +168,6 @@ export const processWeather = (wData, range) => {
       newData.weather.push(wf)
     }
   }
-  checkData(data)
   addData(newData)
+  return true
 }

@@ -14,33 +14,20 @@ export const loadResults = async() => {
     const h3 = document.createElement('h3')
     h3.className = 'dest-name'
 
-    // TODO: Try to make less convoluted
     // Determine what to enter in dest-name
     let text = ''
+    let space = ' '
     let comma = ', '
-    let city = data.city
-    let state = data.state
-    let country = data.country
-    if (data.city && data.state && !data.country) {
-      text = text.concat(city, comma, state)
-    }
-    else if (data.city && !data.state && data.country) {
-      text = text.concat(city, comma, country)
-    }
-    else if (!data.city && data.state && data.country) {
-      text = text.concat(state, comma, country)
-    }
-    else if (data.city && !data.state && !data.country) {
-      text = text.concat(city)
-    }
-    else if (!data.city && data.state && !data.country) {
-      text = text.concat(state)
-    }
-    else if (!data.city && !data.state && data.country) {
-      text = text.concat(country)
-    } else {
-      text = text.concat(city, comma, state, comma, country)
-    }
+    let city
+    let state
+    let country
+
+    data.city ? city = data.city : city = ''
+    data.state ? state = data.state : state = ''
+    data.country ? country = data.country : country = ''
+
+    text = text.concat(city, space, state, comma, country)
+
     h3.innerText = text
     lDiv.append(h3)
 
@@ -59,7 +46,7 @@ export const loadResults = async() => {
     img.id = 'pix-img'
     if (data.pixUrl) { img.src = data.pixUrl }
     else {
-      img.src = 'b798cf65cc50b33b79005263c54b32fd.jpg'
+      img.src = 'http://localhost:8080/b798cf65cc50b33b79005263c54b32fd.jpg'
       const pixp = document.createElement('p')
       pixp.innerHTML = 'Sorry, no picture available.  Here is one of a beach!'
       pix.append(pixp)
@@ -69,6 +56,7 @@ export const loadResults = async() => {
     section.append(lDiv)
 
     const coords = { lat: data.lat, long: data.long }
+    console.log('coords', coords)
     Client.getMap(coords)
 
     const div = document.createElement('div')
