@@ -1,4 +1,5 @@
 footer {
+  align-items: center;
   background-color: #555;
   display: flex;
   justify-content: space-between;
@@ -9,4 +10,11 @@ footer {
 .copy {
   color: #ddd;
   margin: 0;
+  padding: 5px;
+}
+
+
+footer img:hover {
+  background-color: red;
+  padding: 2px;
 }
