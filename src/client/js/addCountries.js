@@ -8,6 +8,7 @@ export const addCountries = async() => {
       const option = document.createElement('option')
       option.className = 'country-option'
       option.value = Object.entries(countries)[i][0]
+      option.setAttribute('data-country', Object.entries(countries)[i][1])
       option.innerHTML = Object.entries(countries)[i][1]
       select.appendChild(option)
     }

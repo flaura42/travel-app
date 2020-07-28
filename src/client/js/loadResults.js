@@ -13,6 +13,8 @@ export const loadResults = async() => {
     lDiv.id = 'location-div'
     const h3 = document.createElement('h3')
     h3.className = 'dest-name'
+
+    // TODO: Try to make less convoluted
     // Determine what to enter in dest-name
     let text = ''
     let comma = ', '
@@ -44,7 +46,7 @@ export const loadResults = async() => {
 
     const tp = document.createElement('p')
     tp.className = 'timezone'
-    tp.innerHTML = `<span class="bold">Timezone:</span> ${data.timezone}`
+    tp.innerHTML = `<span class="bold">Timezone:</span>  ${data.timezone}`
     lDiv.append(tp)
 
     const mapDiv = document.createElement('div')
@@ -53,22 +55,21 @@ export const loadResults = async() => {
 
     const pix = document.createElement('div')
     pix.id = 'pix-div'
-    if (data.pixUrl === 'b798cf65cc50b33b79005263c54b32fd.jpg') {
+    const img = document.createElement('img')
+    img.id = 'pix-img'
+    if (data.pixUrl) { img.src = data.pixUrl }
+    else {
+      img.src = 'b798cf65cc50b33b79005263c54b32fd.jpg'
       const pixp = document.createElement('p')
       pixp.innerHTML = 'Sorry, no picture available.  Here is one of a beach!'
       pix.append(pixp)
     }
-    const img = document.createElement('img')
-    img.id = 'pix-img'
-    img.src = data.pixUrl
-
     pix.append(img)
     lDiv.append(pix)
     section.append(lDiv)
 
     const coords = { lat: data.lat, long: data.long }
     Client.getMap(coords)
-
 
     const div = document.createElement('div')
     div.id = 'results-div'
