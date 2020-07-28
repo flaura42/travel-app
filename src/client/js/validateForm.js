@@ -20,11 +20,19 @@ export const validateForm = (data) => {
     return false
   };
 
+  let now = new Date()
+  let today = Date.parse(now)
   let start = Date.parse(data.start)
   let end = Date.parse(data.end)
   let range = end - start
   if (range < 0) {
     alert('Are you returning before you leave?')
+    return false
+  }
+
+  let before = start - today
+  if (before < 0) {
+    alert('Oh no!  You missed your trip!')
     return false
   }
   return true
