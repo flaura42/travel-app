@@ -30,7 +30,7 @@ const getAll = async() => {
   const data = await res.json();
   return data
   } catch(e) {
-    console.log('getAll error: ', e)
+    console.error('getAll error: ', e)
   }
 }
 
@@ -47,7 +47,7 @@ const getCountries = async() => {
     const response = await res.json()
     return response
   } catch(e) {
-    console.log('getCountries error: ', e)
+    console.error('getCountries error: ', e)
   }
 }
 
@@ -64,7 +64,7 @@ const getStates = async() => {
     const response = await res.json()
     return response
   } catch(e) {
-    console.log('getStates error: ', e)
+    console.error('getStates error: ', e)
   }
 }
 

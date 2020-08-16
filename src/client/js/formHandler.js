@@ -85,7 +85,7 @@ const handleGeo = async(loc) => {
     console.log('handleGeo data: ', data)
     return data
   } catch(e) {
-    console.log('handleGeo error: ', e);
+    console.error('handleGeo error: ', e);
   }
 }
 
@@ -101,7 +101,7 @@ const handleWb = async(coords, range) => {
     console.log('handleWb Data: ', data)
     return data
   } catch(e) {
-    console.log('handleWb error: ', e);
+    console.error('handleWb error: ', e);
   }
 }
 
@@ -126,6 +126,6 @@ const handlePix = async() => {
     }
     else { return true }
   } catch(e) {
-    console.log('handlePix error: ', e);
+    console.error('handlePix error: ', e);
   }
 }

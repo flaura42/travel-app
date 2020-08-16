@@ -13,6 +13,6 @@ export const addCountries = async() => {
       select.appendChild(option)
     }
   } catch(e) {
-    console.log('Error with addCountries: ', e);
+    console.error('Error with addCountries: ', e);
   }
 }

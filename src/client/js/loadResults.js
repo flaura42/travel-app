@@ -132,6 +132,6 @@ export const loadResults = async() => {
 
     section.classList.remove('invisible')
   } catch(e) {
-    console.log('loadResults error: ', e)
+    console.error('loadResults error: ', e)
   }
 }

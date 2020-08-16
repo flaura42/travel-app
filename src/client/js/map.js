@@ -1,6 +1,9 @@
+const dotenv = require('dotenv').config();
+
 // Create the script tag, set the appropriate attributes
 const script = document.createElement('script');
-script.src = `https://maps.googleapis.com/maps/api/js?key=&callback=initMap`;
+script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.GOO_KEY}&callback=initMap`;
+
 script.defer = true;
 script.async = true;
 

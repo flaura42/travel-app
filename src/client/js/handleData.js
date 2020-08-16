@@ -10,7 +10,7 @@ export const addData = async(data) => {
     if (response.success) { return true }
     else { return false }
   } catch(e) {
-    console.log('addData error: ', e)
+    console.error('addData error: ', e)
   }
 }
 
@@ -27,7 +27,7 @@ export const removeData = async() => {
     if (response.success) { return true }
     else { return false }
   } catch(e) {
-    console.log('removeData error: ', e)
+    console.error('removeData error: ', e)
   }
 }
 
@@ -97,7 +97,7 @@ export const checkData = async(newData) => {
     if (status) { return data }
     else { return false }
   } catch(e) {
-    console.log('checkData error', e)
+    console.error('checkData error', e)
   }
 }
 
